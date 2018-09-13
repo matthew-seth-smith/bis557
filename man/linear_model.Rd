@@ -12,10 +12,10 @@ linear_model(formula, data)
 \item{data}{a data.frame}
 }
 \value{
-An lm object
+An lm object, but only the coefficients (not the standard errors, t-values, or two-sided probabilities)
 }
 \description{
-This function passes parameters to the lm function.
+This function is my own implementation of the "lm" function in R. It tests for and removes colinear variables from the model.
 }
 \examples{
 fit <- linear_model(Sepal.Length ~., iris)
