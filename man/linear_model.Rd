@@ -19,5 +19,5 @@ This function is my own implementation of the "lm" function in R. It tests for a
 }
 \examples{
 fit <- linear_model(Sepal.Length ~., iris)
-summary(fit)
+#summary(fit) #Commented this out so that the lm object without all the fields filled in can work
 }

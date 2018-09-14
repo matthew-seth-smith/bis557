@@ -6,7 +6,7 @@
 #' @return An lm object, but only the coefficients (not the standard errors, t-values, or two-sided probabilities)
 #' @examples
 #' fit <- linear_model(Sepal.Length ~., iris)
-#' summary(fit)
+#' #summary(fit) #Commented this out so that the lm object without all the fields filled in can work
 #' @export
 linear_model <- function(formula, data) {
   X <- model.matrix(formula, data) #This is our model matrix of the data for the model
