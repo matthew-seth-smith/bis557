@@ -4,12 +4,13 @@
 #' @param formula a formula
 #' @param data a data.frame
 #' @return An lm object, but only the coefficients (not the standard errors, t-values, or two-sided probabilities)
+#' @import stats 
 #' @examples
 #' fit <- linear_model(Sepal.Length ~., iris)
 #' #summary(fit) #Commented this out so that the lm object without all the fields filled in can work
 #' @export
 linear_model <- function(formula, data) {
-  X <- model.matrix(formula, data) #This is our model matrix of the data for the model
+  X <- stats::model.matrix(formula, data) #This is our model matrix of the data for the model
   coef_out <- as.list(rep(NA, ncol(X))) #Initialize the output
   names(coef_out) <- colnames(X) #Naming the coefficients
   
