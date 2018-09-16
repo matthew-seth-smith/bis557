@@ -14,4 +14,4 @@ library(bis557)
 fit <- linear_model(Sepal.Length ~., iris)
 ```
 
-Do NOT use ```{R} summary(fit)``` after this, since the `lm` object created by `linear_model` does not have all of the required fields filled.
+Do NOT use `summary(fit)` after this, since the `lm` object created by `linear_model` does not have all of the required fields filled.
