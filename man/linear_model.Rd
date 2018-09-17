@@ -4,20 +4,24 @@
 \alias{linear_model}
 \title{Fit a linear model}
 \usage{
-linear_model(formula, data)
+linear_model(formula, data, tol = 1e-16)
 }
 \arguments{
 \item{formula}{a formula}
 
 \item{data}{a data.frame}
+
+\item{tol}{the tolerance of double precision floating point arithmetic, which is by default 1e-16 (according to the book)}
 }
 \value{
-An lm object, but only the coefficients (not the standard errors, t-values, or two-sided probabilities)
+An lm object, but only the coefficients (not the standard errors, t-values, or two-sided probabilities), so don't use summary() on this!
 }
 \description{
-This function is my own implementation of the "lm" function in R. It tests for and removes colinear variables from the model.
+This function is my own implementation of the "lm" function in R. The implementation is based on the SVD method from Chapter 2 of A Computational Approach to Statistical Learning.
+
+This method only uses the singular values that define an inverse condtion number greater than the tolerance of double precision floating point arithmetic, which we assume is 1e-16.
 }
 \examples{
 fit <- linear_model(Sepal.Length ~., iris)
-#summary(fit) #Commented this out so that the lm object without all the fields filled in can work
+fit
 }
