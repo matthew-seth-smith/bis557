@@ -18,25 +18,33 @@ linear_model <- function(formula, data, tol=1e-16) {
   y_index <- which(colnames(data) == as.character(formula)[2]) #This is where in the data we can find the response variable
   y <- data[,y_index] #Get the vector of the response data
   
-  # Using Chapter 2 of A Computational Approach to Statistical Learning:
+  # Cathy's thing for removing dependencies!
+  omitted <- rownames(stats::alias(formula, data)$Complete) #Alias removes the dependencies. This returns the columns to be omitted
+  X <- X[,setdiff(colnames(X), omitted)] #Remove the linearly dependent columns
+  
+  # Using Chapter 2, Section 5 of A Computational Approach to Statistical Learning:
+  
   svd_list <- svd(X)
   sv <- svd_list[["d"]] #The singular values of X
   sigma_inverse <- diag(1/sv) #The sigma^-1 matrix, where sigma is a matrix of singular values in decreasing order
   U <- svd_list[["u"]] #U matrix of SVD
   V <- svd_list[["v"]] #V matrix of SVD
+  browser()
+  beta_hat <- V %*% sigma_inverse %*% t(U) %*% y
+  
   
   # We now look for the subset of the singular values where the inverse condition number is larger than the tolerance
-  cond_inv <- sv / sv[1] #This gives the ratio of each singular value to the largest singular value
-  smallest <- sum(cond_inv > tol) #Since the singular values are decreasing, so are the entries for cond
+  #cond_inv <- sv / sv[1] #This gives the ratio of each singular value to the largest singular value
+  #smallest <- sum(cond_inv > tol) #Since the singular values are decreasing, so are the entries for cond
   # Then this gives us the index of the smallest singular value where the condition number is still greater than the tolerance
   
   # Ask how to get the correct subset of the predictors from this...
   
   
   # Using Homework 3 of BIS 623 from Fall, 2017 as a guide:
-  beta_hat <- data.frame(solve(t(X) %*% X) %*% t(X) %*% y) #A data.frame with one column of the estimated coefficients
+  #beta_hat <- data.frame(solve(t(X) %*% X) %*% t(X) %*% y) #A data.frame with one column of the estimated coefficients
   # By using a data.frame instead of a vector, we can add row names
-  rownames(beta_hat) <- colnames(X) #Change this later to be just the subset used
+  #rownames(beta_hat) <- colnames(X) #Change this later to be just the subset used
   
   for(i in 1:length(coef_out)){ #Temporary fix, until have the subsetted data thing
     coef_out[[i]] <- beta_hat[i,]
