@@ -1,38 +1,40 @@
 #' Fit a linear model
 #'
 #' @description This function is my own implementation of the "lm" function in R. The implementation is based on the SVD method from Chapter 2 of A Computational Approach to Statistical Learning.
-#' @description This method only uses the singular values that define an inverse condtion number greater than the tolerance of double precision floating point arithmetic, which we assume is 1e-16.
+#' @description This method only uses the covariates that are linearly independent, using the "alias" function from the "stats" package to perform this test.
 #' @param formula a formula
 #' @param data a data.frame
-#' @param tol the tolerance of double precision floating point arithmetic, which is by default 1e-16 (according to the book)
 #' @return An lm object, but only the coefficients (not the standard errors, t-values, or two-sided probabilities), so don't use summary() on this!
 #' @import stats 
 #' @examples
 #' fit <- linear_model(Sepal.Length ~., iris)
 #' fit
 #' @export
-linear_model <- function(formula, data, tol=1e-16) {
+linear_model <- function(formula, data) {
   X <- stats::model.matrix(formula, data) #This is our model matrix of the data for the model
-  coef_out <- as.list(rep(NA, ncol(X))) #Initialize the output
-  names(coef_out) <- colnames(X) #Naming the coefficients
+  coef_out <- data.frame(rep(NA, ncol(X))) #Initialize the output
+  rownames(coef_out) <- colnames(X) #Naming the coefficients
   y_index <- which(colnames(data) == as.character(formula)[2]) #This is where in the data we can find the response variable
   y <- data[,y_index] #Get the vector of the response data
   
-  # Cathy's thing for removing dependencies!
+  # Using the alias command to remove dependencies, as suggested by Cathy Xue
   omitted <- rownames(stats::alias(formula, data)$Complete) #Alias removes the dependencies. This returns the columns to be omitted
-  X <- X[,setdiff(colnames(X), omitted)] #Remove the linearly dependent columns
+  Xred <- X[,setdiff(colnames(X), omitted)] #Remove the linearly dependent columns, to get a reduced data set
   
   # Using Chapter 2, Section 5 of A Computational Approach to Statistical Learning:
-  
-  svd_list <- svd(X)
+  svd_list <- svd(Xred)
   sv <- svd_list[["d"]] #The singular values of X
   sigma_inverse <- diag(1/sv) #The sigma^-1 matrix, where sigma is a matrix of singular values in decreasing order
   U <- svd_list[["u"]] #U matrix of SVD
   V <- svd_list[["v"]] #V matrix of SVD
-  browser()
   beta_hat <- V %*% sigma_inverse %*% t(U) %*% y
+  coef_out[colnames(Xred),1] <- beta_hat
+  colnames(coef_out) <- ""
+  coef_out <- t(coef_out) #Make horizontal for output
+  coef_out <- as.list(coef_out) #Make a list, as it would be in an lm object
+  names(coef_out) <- colnames(X) #Putting the names back
   
-  
+
   # We now look for the subset of the singular values where the inverse condition number is larger than the tolerance
   #cond_inv <- sv / sv[1] #This gives the ratio of each singular value to the largest singular value
   #smallest <- sum(cond_inv > tol) #Since the singular values are decreasing, so are the entries for cond
@@ -46,9 +48,9 @@ linear_model <- function(formula, data, tol=1e-16) {
   # By using a data.frame instead of a vector, we can add row names
   #rownames(beta_hat) <- colnames(X) #Change this later to be just the subset used
   
-  for(i in 1:length(coef_out)){ #Temporary fix, until have the subsetted data thing
-    coef_out[[i]] <- beta_hat[i,]
-  }
+  #for(i in 1:length(coef_out)){ #Temporary fix, until have the subsetted data thing
+    #coef_out[[i]] <- beta_hat[i,]
+  #}
   
   ret <- list() #Initialize the return object
   class(ret) <- "lm" #Make the return object an lm object
