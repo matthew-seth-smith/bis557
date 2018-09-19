@@ -34,24 +34,7 @@ linear_model <- function(formula, data) {
   coef_out <- as.list(coef_out) #Make a list, as it would be in an lm object
   names(coef_out) <- colnames(X) #Putting the names back
   
-
-  # We now look for the subset of the singular values where the inverse condition number is larger than the tolerance
-  #cond_inv <- sv / sv[1] #This gives the ratio of each singular value to the largest singular value
-  #smallest <- sum(cond_inv > tol) #Since the singular values are decreasing, so are the entries for cond
-  # Then this gives us the index of the smallest singular value where the condition number is still greater than the tolerance
-  
-  # Ask how to get the correct subset of the predictors from this...
-  
-  
-  # Using Homework 3 of BIS 623 from Fall, 2017 as a guide:
-  #beta_hat <- data.frame(solve(t(X) %*% X) %*% t(X) %*% y) #A data.frame with one column of the estimated coefficients
-  # By using a data.frame instead of a vector, we can add row names
-  #rownames(beta_hat) <- colnames(X) #Change this later to be just the subset used
-  
-  #for(i in 1:length(coef_out)){ #Temporary fix, until have the subsetted data thing
-    #coef_out[[i]] <- beta_hat[i,]
-  #}
-  
+  # Returning the lm object output
   ret <- list() #Initialize the return object
   class(ret) <- "lm" #Make the return object an lm object
   #Assign the formula and data to the call field of the lm object. I used as.name to remove the quotes:
