@@ -8,6 +8,7 @@ test_that("The linear_model function works.", {
   fit_lm <- lm(form, data)
   fit_linear_model <- linear_model(form, data) #fitLinearModel
   expect_is(fit_linear_model, "lm")
-  expect_equivalent(fit_lm$coefficients, fit_linear_model$coefficients)
+  expect_equivalent(fit_lm$coefficients, fit_linear_model$coefficients,
+                    tolerance = 1e-5)
 })
 
