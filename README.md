@@ -17,3 +17,9 @@ fit <- linear_model(Sepal.Length ~., iris)
 Do NOT use `summary(fit)` after this, since the `lm` object created by `linear_model` does not have all of the required fields filled.
 
 Next we created a function that computes the ridge regression using SVD. You can use it like this:
+
+```{R}
+library(bis557)
+fit_reg <- ridge_reg(Sepal.Length ~., iris, 1)
+predict(fit_reg, iris)
+```
