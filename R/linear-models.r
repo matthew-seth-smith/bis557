@@ -6,6 +6,7 @@
 #' @param data a data.frame
 #' @return An lm object, but only the coefficients (not the standard errors, t-values, or two-sided probabilities), so don't use summary() on this!
 #' @import stats 
+#' @import MASS
 #' @examples
 #' fit <- linear_model(Sepal.Length ~., iris)
 #' fit

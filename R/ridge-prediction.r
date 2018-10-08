@@ -4,7 +4,8 @@
 #' @param object a ridge_reg object
 #' @param ... all the other possible parameters for the predict method
 #' @return A vector of the predicted values for the given data and ridge regression coefficients
-#' @import stats 
+#' @import stats
+#' @import MASS
 #' @examples
 #' fit_reg <- ridge_reg(Sepal.Length ~., iris, 1)
 #' predict(fit_reg, iris)

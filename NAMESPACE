@@ -3,4 +3,5 @@
 S3method(predict,ridge_reg)
 export(linear_model)
 export(ridge_reg)
+import(MASS)
 import(stats)

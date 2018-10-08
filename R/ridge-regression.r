@@ -5,7 +5,8 @@
 #' @param data a data.frame
 #' @param lambda a non-negative lambda value for the ridge regression (0 just gives ordinary least squares regression)
 #' @return A ridge_reg object, which is a list containing a vector of named coefficients, the lambda value, and the formula
-#' @import stats 
+#' @import stats
+#' @import MASS
 #' @examples
 #' fit_reg <- ridge_reg(Sepal.Length ~., iris, 1)
 #' fit_reg

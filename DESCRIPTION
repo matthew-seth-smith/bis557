@@ -10,3 +10,4 @@ RoxygenNote: 6.1.0
 Suggests: testthat, knitr
 VignetteBuilder: knitr
 Encoding: UTF-8
+Imports: stats, MASS
