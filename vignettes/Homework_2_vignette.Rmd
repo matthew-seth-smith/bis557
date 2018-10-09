@@ -12,6 +12,13 @@ output:
 %\VignetteIndexEntry{The linear model vignette}
 -->
 
+```{r, echo=FALSE}
+# Installing the necessary packages for Travis CI
+install.packages("stats", "ggplot2")
+```
+
+
+
 # 1. Introduction
 In this vignette, we demonstrate the `ridge_reg` function we created to compute a ridge regression
 on a given linear model. We will use the `ridge_train` data set in this package to check this, with
@@ -106,7 +113,9 @@ norm_sq_deriv <- function(lam){ #A function of the lambda value that gives the L
   return(sum(deriv^2))
 }
 
-#ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=norm_sq_deriv)
+eps <- 0.1 #Our cut-off value epsilon
+ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=norm_sq_deriv) + xlim(0,10) + ylim(0,1) +
+  geom_hline(yintercept=0, color="black") + geom_hline(yintercept=eps, color="blue")
 ```
 
 
