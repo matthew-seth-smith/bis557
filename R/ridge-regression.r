@@ -18,7 +18,7 @@ ridge_reg <- function(formula, data, lambda){
   y <- data[,y_index] #Get the vector of the response data
   m <- stats::model.matrix(formula, data) #This is our model matrix of the data for the model
   
-  svd_object <- svd(m) #Do singular value decompositions
+  svd_object <- svd(m) #Do singular value decomposition
   U <- svd_object$u #One of the orthogonal rotation/reflection matrices from SVD
   V <- svd_object$v #The other orthogonal matrix from SVD
   svals <- svd_object$d #The singular values from SVD
