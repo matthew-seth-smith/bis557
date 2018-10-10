@@ -140,16 +140,6 @@ $(document).ready(function () {
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{The linear model vignette}
 -->
-<pre><code>## Installing package into '/Users/matthewsmith/Library/R/3.5/library'
-## (as 'lib' is unspecified)</code></pre>
-<pre><code>## Warning in install.packages :
-##   unable to access index for repository https://cran.us.r-project.org/src/contrib:
-##   cannot open URL 'https://cran.us.r-project.org/src/contrib/PACKAGES'
-## Warning in install.packages :
-##   package 'ggplot2' is not available (for R version 3.5.1)
-## Warning in install.packages :
-##   unable to access index for repository https://cran.us.r-project.org/bin/macosx/el-capitan/contrib/3.5:
-##   cannot open URL 'https://cran.us.r-project.org/bin/macosx/el-capitan/contrib/3.5/PACKAGES'</code></pre>
 <div id="introduction" class="section level1">
 <h1>1. Introduction</h1>
 <p>In this vignette, we demonstrate the <code>ridge_reg</code> function we created to compute a ridge regression on a given linear model. We will use the <code>ridge_train</code> and <code>ridge_test</code> data sets in this package to check this, with the simple model <span class="math inline">\(y \sim X_1 + X_2 + X_3 + X_4\)</span> (denoted in <code>R</code> as <code>y ~ .</code>). Using the mean squared error (<span class="math inline">\(MSE\)</span>) to compute the error in the predicted values from the true values, we will estimate an optimal value for the ridge variable <span class="math inline">\(\lambda\)</span>. The data set <code>ridge_train</code> will give us a possible range for <span class="math inline">\(\lambda\)</span> that we will use to find the optimal <span class="math inline">\(\lambda\)</span> for <code>ridge_test</code>, using the <span class="math inline">\(MSE\)</span>. This vignette will use the <code>predict</code> <code>S3</code> method that we defined for <code>ridge_reg</code> objects.</p>

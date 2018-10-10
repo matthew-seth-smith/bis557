@@ -12,13 +12,6 @@ output:
 %\VignetteIndexEntry{The linear model vignette}
 -->
 
-```{r, echo=FALSE}
-# Installing the necessary packages for Travis CI
-#install.packages("ggplot2", repos="https://cran.us.r-project.org")
-```
-
-
-
 # 1. Introduction
 In this vignette, we demonstrate the `ridge_reg` function we created to compute a ridge regression
 on a given linear model. We will use the `ridge_train` and `ridge_test` data sets in this package to

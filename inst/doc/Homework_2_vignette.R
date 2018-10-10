@@ -1,7 +1,3 @@
-## ---- echo=FALSE---------------------------------------------------------
-# Installing the necessary packages for Travis CI
-install.packages("ggplot2", repos="https://cran.us.r-project.org")
-
 ## ------------------------------------------------------------------------
 library(bis557)
 data("ridge_train")
