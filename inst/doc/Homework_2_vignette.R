@@ -36,7 +36,7 @@ nsd(20.5)
 ## ------------------------------------------------------------------------
 y_test <- ridge_test$y #The response data
 mse <- function(lam){ #Calculates the MSE for ridge_test for a given lambda value lam
-  y_hat <- predict(ridge_reg(form, ridge_test, lam), ridge_test) #The predicted values
+  y_hat <- predict(ridge_reg(form, lam, ridge_test), ridge_test) #The predicted values
   mean((y_test-y_hat)^2)
 }
 
