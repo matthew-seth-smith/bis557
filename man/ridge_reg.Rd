@@ -4,14 +4,14 @@
 \alias{ridge_reg}
 \title{Fit a Ridge Regression Linear Model}
 \usage{
-ridge_reg(formula, data, lambda)
+ridge_reg(formula, lambda, data)
 }
 \arguments{
 \item{formula}{a formula}
 
-\item{data}{a data.frame}
-
 \item{lambda}{a non-negative lambda value for the ridge regression (0 just gives ordinary least squares regression)}
+
+\item{data}{a data.frame}
 }
 \value{
 A ridge_reg object, which is a list containing a vector of named coefficients, the lambda value, and the formula
@@ -20,6 +20,6 @@ A ridge_reg object, which is a list containing a vector of named coefficients, t
 This function computes a ridge regression linear model. The implementation uses SVD.
 }
 \examples{
-fit_reg <- ridge_reg(Sepal.Length ~., iris, 1)
+fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 fit_reg
 }

@@ -120,6 +120,10 @@ ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=nsd, color="blue") + xlim(
   geom_vline(xintercept=20.5, color="purple")
 nsd(20.5)
 ```
+It seems that, given the threshold $\epsilon=0.001$, the $L2$-norm squared of the derivative of
+$\hat{\beta}_{Ridge}$ dips below the threshold at around $\lambda=20.5$. This cutoff was calulated
+using the `ridge_train` data, but we will now use it to determine the optimal $\lambda$ and
+$\hat{\beta}_{Ridge}$ for the similar `ridge_test` data.
 
 
 # 4. The Mean Squared Error and Selecting a Value for $\lambda$

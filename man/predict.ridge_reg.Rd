@@ -18,6 +18,6 @@ A vector of the predicted values for the given data and ridge regression coeffic
 This method predicts the response to a ridge regression object.
 }
 \examples{
-fit_reg <- ridge_reg(Sepal.Length ~., iris, 1)
+fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 predict(fit_reg, iris)
 }

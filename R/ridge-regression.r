@@ -2,16 +2,16 @@
 #'
 #' @description This function computes a ridge regression linear model. The implementation uses SVD.
 #' @param formula a formula
-#' @param data a data.frame
 #' @param lambda a non-negative lambda value for the ridge regression (0 just gives ordinary least squares regression)
+#' @param data a data.frame
 #' @return A ridge_reg object, which is a list containing a vector of named coefficients, the lambda value, and the formula
 #' @import stats
 #' @import MASS
 #' @examples
-#' fit_reg <- ridge_reg(Sepal.Length ~., iris, 1)
+#' fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 #' fit_reg
 #' @export
-ridge_reg <- function(formula, data, lambda){
+ridge_reg <- function(formula, lambda, data){
   # Based on what we did in class and the linear_model function in this package
   rownames(data) <- NULL #In case data is a subset of a larger data.frame, this will mean the indexing won't get messed up
   y_index <- which(colnames(data) == as.character(formula)[2]) #This is where in the data we can find the response variable

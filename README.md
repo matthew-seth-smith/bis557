@@ -20,6 +20,6 @@ Next we created a function that computes the ridge regression using SVD. You can
 
 ```{R}
 library(bis557)
-fit_reg <- ridge_reg(Sepal.Length ~., iris, 1)
+fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 predict(fit_reg, iris)
 ```

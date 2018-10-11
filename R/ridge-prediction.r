@@ -7,7 +7,7 @@
 #' @import stats
 #' @import MASS
 #' @examples
-#' fit_reg <- ridge_reg(Sepal.Length ~., iris, 1)
+#' fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 #' predict(fit_reg, iris)
 #' @export
 predict.ridge_reg <- function(object, ...){
