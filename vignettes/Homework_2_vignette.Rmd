@@ -110,9 +110,15 @@ norm_sq_deriv <- function(lam){ #A function of the lambda value that gives the L
   return(sum(deriv^2))
 }
 
-eps <- 0.1 #Our cut-off value epsilon
-ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=norm_sq_deriv) + xlim(0,10) + ylim(0,1) +
-  geom_hline(yintercept=0, color="black") + geom_hline(yintercept=eps, color="blue")
+nsd <- function(lam){ #This function vectorizes norm_sq_deriv so we can use it in ggplot
+  unlist(lapply(lam, norm_sq_deriv))
+}
+
+eps <- 0.001 #Our cut-off value epsilon
+ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=nsd, color="blue") + xlim(0,30) +
+  ylim(0,0.015) + geom_hline(yintercept=0, color="black") + geom_hline(yintercept=eps, color="red") +
+  geom_vline(xintercept=20.5, color="purple")
+nsd(20.5)
 ```
 
 
