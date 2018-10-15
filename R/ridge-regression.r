@@ -3,7 +3,7 @@
 #' @description This function computes a ridge regression linear model. The implementation uses SVD.
 #' @param formula a formula
 #' @param lambda a non-negative lambda value for the ridge regression (0 just gives ordinary least squares regression)
-#' @param data a data.frame
+#' @param dat a data.frame
 #' @return A ridge_reg object, which is a list containing a vector of named coefficients, the lambda value, and the formula
 #' @import stats
 #' @import MASS
@@ -11,12 +11,12 @@
 #' fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 #' fit_reg
 #' @export
-ridge_reg <- function(formula, lambda, data){
+ridge_reg <- function(formula, lambda, dat){
   # Based on what we did in class and the linear_model function in this package
-  rownames(data) <- NULL #In case data is a subset of a larger data.frame, this will mean the indexing won't get messed up
-  y_index <- which(colnames(data) == as.character(formula)[2]) #This is where in the data we can find the response variable
-  y <- data[,y_index] #Get the vector of the response data
-  m <- stats::model.matrix(formula, data) #This is our model matrix of the data for the model
+  rownames(dat) <- NULL #In case data is a subset of a larger data.frame, this will mean the indexing won't get messed up
+  y_index <- which(colnames(dat) == as.character(formula)[2]) #This is where in the data we can find the response variable
+  y <- dat[,y_index] #Get the vector of the response data
+  m <- stats::model.matrix(formula, dat) #This is our model matrix of the data for the model
   
   svd_object <- svd(m) #Do singular value decomposition
   U <- svd_object$u #One of the orthogonal rotation/reflection matrices from SVD

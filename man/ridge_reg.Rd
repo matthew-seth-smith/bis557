@@ -4,14 +4,14 @@
 \alias{ridge_reg}
 \title{Fit a Ridge Regression Linear Model}
 \usage{
-ridge_reg(formula, lambda, data)
+ridge_reg(formula, lambda, dat)
 }
 \arguments{
 \item{formula}{a formula}
 
 \item{lambda}{a non-negative lambda value for the ridge regression (0 just gives ordinary least squares regression)}
 
-\item{data}{a data.frame}
+\item{dat}{a data.frame}
 }
 \value{
 A ridge_reg object, which is a list containing a vector of named coefficients, the lambda value, and the formula

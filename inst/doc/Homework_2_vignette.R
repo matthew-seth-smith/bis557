@@ -7,19 +7,19 @@ form <- y ~ .
 ## ------------------------------------------------------------------------
 library(stats) #For model.matrix
 library(ggplot2) #For ggplot
-X <- model.matrix(form, ridge_train) #We use the ridge_train data set to determine the range
-y <- ridge_train$y
+X_train <- model.matrix(form, ridge_train) #We use the ridge_train data set to determine the range
+y_train <- ridge_train$y
 
-svd_object <- svd(X) #Do singular value decomposition
-U <- svd_object$u
-V <- svd_object$v
-svals <- svd_object$d #The singular values from SVD
+svd_object_train <- svd(X_train) #Do singular value decomposition
+U_train <- svd_object_train$u
+V_train <- svd_object_train$v
+svals_train <- svd_object_train$d #The singular values from SVD
 D_2 <- function(lam){ #The diagonal matrix in the derivative vector
-  diag(svals / (svals^2 + lam)^2)
+  diag(svals_train / (svals_train^2 + lam)^2)
 }
 
 norm_sq_deriv <- function(lam){ #A function of the lambda value that gives the L2-norm squared of the derivative of beta_hat
-  deriv <- -V %*% D_2(lam) %*% t(U) %*% y
+  deriv <- -V_train %*% D_2(lam) %*% t(U_train) %*% y_train
   return(sum(deriv^2))
 }
 
@@ -35,8 +35,22 @@ nsd(20.5)
 
 ## ------------------------------------------------------------------------
 y_test <- ridge_test$y #The response data
-mse <- function(lam){ #Calculates the MSE for ridge_test for a given lambda value lam
-  y_hat <- predict(ridge_reg(form, lam, ridge_test), ridge_test) #The predicted values
-  mean((y_test-y_hat)^2)
+mean_squared_error <- function(lambda){ #Calculates the MSE for ridge_test for a given lambda value lam
+  predicted_temp <- ridge_reg(form, lambda, ridge_test)
+  y_hat <- predict(predicted_temp, ridge_test) #The predicted values
+  mean((y_test-y_hat)^2) #The mse
 }
+
+mse <- function(lam){ #Vectorizes the mean_sq_error function above
+  unlist(lapply(lam, mean_sq_error))
+}
+
+df <- data.frame(lambda=seq(0, 20.5, 0.01))
+df$mse <- mse(df$lambda)
+ggplot(df, aes(x=lambda, y=mse)) + geom_point()
+
+
+df2<- data.frame(lambda=seq(0, 1, 0.001))
+df2$mse <- mse(df2$lambda)
+ggplot(df2, aes(x=lambda, y=mse)) + geom_point()
 
