@@ -34,6 +34,7 @@ ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=nsd, color="blue") + xlim(
 nsd(20.5)
 
 ## ---- eval=TRUE----------------------------------------------------------
+library(rmarkdown)
 library(devtools)
 install()
 y_test <- ridge_test$y #The response data
