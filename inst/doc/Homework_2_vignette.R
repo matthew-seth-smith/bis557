@@ -34,8 +34,8 @@ ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=nsd, color="blue") + xlim(
 nsd(20.5)
 
 ## ---- eval=TRUE----------------------------------------------------------
-library(devtools)
-install()
+#library(devtools)
+#install()
 y_test <- ridge_test$y #The response data
 mean_squared_error <- function(lambda){ #Calculates the MSE for ridge_test for a given lambda value lam
   predicted_temp <- ridge_reg(form, lambda, ridge_test)
