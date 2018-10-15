@@ -33,24 +33,26 @@ ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=nsd, color="blue") + xlim(
   geom_vline(xintercept=20.5, color="purple")
 nsd(20.5)
 
-## ---- eval=FALSE---------------------------------------------------------
-#  y_test <- ridge_test$y #The response data
-#  mean_squared_error <- function(lambda){ #Calculates the MSE for ridge_test for a given lambda value lam
-#    predicted_temp <- ridge_reg(form, lambda, ridge_test)
-#    y_hat <- predict(predicted_temp, ridge_test) #The predicted values
-#    mean((y_test-y_hat)^2) #The mse
-#  }
-#  
-#  mse <- function(lam){ #Vectorizes the mean_sq_error function above
-#    unlist(lapply(lam, mean_sq_error))
-#  }
-#  
-#  df <- data.frame(lambda=seq(0, 20.5, 0.01))
-#  df$mse <- mse(df$lambda)
-#  ggplot(df, aes(x=lambda, y=mse)) + geom_point()
-#  
-#  
-#  df2<- data.frame(lambda=seq(0, 1, 0.001))
-#  df2$mse <- mse(df2$lambda)
-#  ggplot(df2, aes(x=lambda, y=mse)) + geom_point()
+## ---- eval=TRUE----------------------------------------------------------
+library(devtools)
+install()
+y_test <- ridge_test$y #The response data
+mean_squared_error <- function(lambda){ #Calculates the MSE for ridge_test for a given lambda value lam
+  predicted_temp <- ridge_reg(form, lambda, ridge_test)
+  y_hat <- predict(predicted_temp, ridge_test) #The predicted values
+  mean((y_test-y_hat)^2) #The mse
+}
+
+mse <- function(lam){ #Vectorizes the mean_sq_error function above
+  unlist(lapply(lam, mean_squared_error))
+}
+
+df <- data.frame(lambda=seq(0, 20.5, 0.01))
+df$mse <- mse(df$lambda)
+ggplot(df, aes(x=lambda, y=mse)) + geom_point()
+
+
+df2<- data.frame(lambda=seq(0, 1, 0.001))
+df2$mse <- mse(df2$lambda)
+ggplot(df2, aes(x=lambda, y=mse)) + geom_point()
 
