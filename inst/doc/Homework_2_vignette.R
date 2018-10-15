@@ -30,7 +30,7 @@ nsd <- function(lam){ #This function vectorizes norm_sq_deriv so we can use it i
 eps <- 5e-4 #Our cut-off value epsilon
 ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=nsd, color="blue") + xlim(0,50) +
   ylim(0,0.015) + geom_hline(yintercept=0, color="black") + geom_hline(yintercept=eps, color="red") +
-  geom_vline(xintercept=30, color="purple") + labs(x=expression(lambda), y=expression(frac(partial, partiallambda)))
+  geom_vline(xintercept=30, color="purple") + labs(x=expression(lambda), y=expression(paste("||", scriptstyle(frac(partialdiff, paste(partialdiff, lambda))), " ", hat(beta)["Ridge"], "||")[2]^2))
 nsd(30)
 
 ## ------------------------------------------------------------------------
@@ -45,14 +45,15 @@ mse <- function(lam){ #Vectorizes the mean_sq_error function above
   unlist(lapply(lam, mean_squared_error))
 }
 
+#Make a data.frame of lambda values, calculate the mse of each, and then graph them
 df <- data.frame(lambda=seq(0, 30, 0.01))
 df$mse <- mse(df$lambda)
-ggplot(df, aes(x=lambda, y=mse)) + geom_point() + labs(x=expression(lambda), y="MSE")
+ggplot(df, aes(x=lambda, y=mse)) + geom_point() + labs(x=expression(lambda), y=expression(italic("MSE")))
 
 ## ------------------------------------------------------------------------
 df2 <- data.frame(lambda=seq(0, 50, 0.01))
 df2$mse <- mse(df2$lambda)
-ggplot(df2, aes(x=lambda, y=mse)) + geom_point() + labs(x=expression(lambda), y="MSE")
+ggplot(df2, aes(x=lambda, y=mse)) + geom_point() + labs(x=expression(lambda), y=expression(italic("MSE")))
 
 
 min_index <- which(df2$mse == min(df2$mse)) #The index of the lambda value that gives the smallest MSE
