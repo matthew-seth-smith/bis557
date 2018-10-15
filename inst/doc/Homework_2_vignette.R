@@ -27,53 +27,39 @@ nsd <- function(lam){ #This function vectorizes norm_sq_deriv so we can use it i
   unlist(lapply(lam, norm_sq_deriv))
 }
 
-eps <- 0.001 #Our cut-off value epsilon
-ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=nsd, color="blue") + xlim(0,30) +
+eps <- 5e-4 #Our cut-off value epsilon
+ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=nsd, color="blue") + xlim(0,50) +
   ylim(0,0.015) + geom_hline(yintercept=0, color="black") + geom_hline(yintercept=eps, color="red") +
-  geom_vline(xintercept=20.5, color="purple")
-nsd(20.5)
+  geom_vline(xintercept=30, color="purple") + labs(x=expression(lambda), y=expression(frac(partial, partiallambda)))
+nsd(30)
 
-## ---- eval=TRUE----------------------------------------------------------
-#library(devtools)
-#install()
+## ------------------------------------------------------------------------
 y_test <- ridge_test$y #The response data
-mean_squared_error <- function(lambda){ #Calculates the MSE for ridge_test for a given lambda value lam
-  predicted_temp <- ridge_reg(form, lambda, ridge_test)
-  y_hat <- predict(predicted_temp, ridge_test) #The predicted values
-  mean((y_test-y_hat)^2) #The mse
+mean_squared_error <- function(lam){ #Calculates the MSE for ridge_test for a given lambda value lam, using ridge_train to determine the coefficients
+  beta_train <- ridge_reg(form, lam, ridge_train) #Calculates the coefficients using the ridge_train data set and lambda value lam
+  y_hat_test <- predict(beta_train, ridge_test) #The predicted values of the ridge_test data set
+  mean((y_test-y_hat_test)^2) #The mse
 }
 
 mse <- function(lam){ #Vectorizes the mean_sq_error function above
   unlist(lapply(lam, mean_squared_error))
 }
 
-df <- data.frame(lambda=seq(0, 20.5, 0.01))
+df <- data.frame(lambda=seq(0, 30, 0.01))
 df$mse <- mse(df$lambda)
-ggplot(df, aes(x=lambda, y=mse)) + geom_point()
+ggplot(df, aes(x=lambda, y=mse)) + geom_point() + labs(x=expression(lambda), y="MSE")
 
-
-df2<- data.frame(lambda=seq(0, 1, 0.001))
+## ------------------------------------------------------------------------
+df2 <- data.frame(lambda=seq(0, 50, 0.01))
 df2$mse <- mse(df2$lambda)
-ggplot(df2, aes(x=lambda, y=mse)) + geom_point()
-
-df3 <-data.frame(lambda=seq(0,300, 5))
-df3$mse <- mse(df3$lambda)
-ggplot(df3, aes(x=lambda, y=mse)) + geom_point()
+ggplot(df2, aes(x=lambda, y=mse)) + geom_point() + labs(x=expression(lambda), y="MSE")
 
 
+min_index <- which(df2$mse == min(df2$mse)) #The index of the lambda value that gives the smallest MSE
+min_lambda <- df2$lambda[min_index] #That particular lambda value
+min_lambda
+mse(min_lambda)
 
-mean_squared_error_train <- function(lambda){ #Calculates the MSE for ridge_test for a given lambda value lam
-  predicted_temp <- ridge_reg(form, lambda, ridge_train)
-  y_hat <- predict(predicted_temp, ridge_train) #The predicted values
-  mean((y_test-y_hat)^2) #The mse
-}
-
-mse_train <- function(lam){ #Vectorizes the mean_sq_error function above
-  unlist(lapply(lam, mean_squared_error_train))
-}
-
-df4 <-data.frame(lambda=seq(0, 30, 0.01))
-df4$mse <- mse_train(df4$lambda)
-ggplot(df4, aes(x=lambda, y=mse)) + geom_point()
-
+## ------------------------------------------------------------------------
+ridge_reg(form, min_lambda, ridge_train)
 
