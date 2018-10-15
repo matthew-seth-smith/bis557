@@ -223,8 +223,8 @@ MSE = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2.
 \]</span> We will use the <code>ridge_reg</code> function in the <code>ridge-regression.r</code> file to make the actual ridge regression regression models and the <code>predict</code> <code>S3</code> method in the <code>ridge-prediction.r</code> file. The range for <span class="math inline">\(\lambda\)</span> will be from <span class="math inline">\(0\)</span> to the value <span class="math inline">\(30\)</span> we determined above. We use <code>ridge_train</code> to determine <span class="math inline">\(\hat{\beta}\)</span> for each value of <span class="math inline">\(\lambda\)</span> and then test the fit on <code>ridge_test</code>.</p>
 <pre class="r"><code>y_test &lt;- ridge_test$y #The response data
 mean_squared_error &lt;- function(lam){ #Calculates the MSE for ridge_test for a given lambda value lam, using ridge_train to determine the coefficients
-  beta_train &lt;- ridge_reg(form, lam, ridge_train) #Calculates the coefficients using the ridge_train data set and lambda value lam
-  y_hat_test &lt;- predict(beta_train, ridge_test) #The predicted values of the ridge_test data set
+  fit_train &lt;- ridge_reg(form, lam, ridge_train) #Calculates the coefficients using the ridge_train data set and lambda value lam
+  y_hat_test &lt;- predict(fit_train, ridge_test) #The predicted values of the ridge_test data set
   mean((y_test-y_hat_test)^2) #The mse
 }
 
