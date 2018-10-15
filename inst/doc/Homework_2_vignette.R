@@ -56,3 +56,24 @@ df2<- data.frame(lambda=seq(0, 1, 0.001))
 df2$mse <- mse(df2$lambda)
 ggplot(df2, aes(x=lambda, y=mse)) + geom_point()
 
+df3 <-data.frame(lambda=seq(0,300, 5))
+df3$mse <- mse(df3$lambda)
+ggplot(df3, aes(x=lambda, y=mse)) + geom_point()
+
+
+
+mean_squared_error_train <- function(lambda){ #Calculates the MSE for ridge_test for a given lambda value lam
+  predicted_temp <- ridge_reg(form, lambda, ridge_train)
+  y_hat <- predict(predicted_temp, ridge_train) #The predicted values
+  mean((y_test-y_hat)^2) #The mse
+}
+
+mse_train <- function(lam){ #Vectorizes the mean_sq_error function above
+  unlist(lapply(lam, mean_squared_error_train))
+}
+
+df4 <-data.frame(lambda=seq(0, 30, 0.01))
+df4$mse <- mse_train(df4$lambda)
+ggplot(df4, aes(x=lambda, y=mse)) + geom_point()
+
+
