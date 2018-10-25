@@ -66,6 +66,28 @@ functions is also convex. Then, the $\ell_1$-norm is convex.
 
 
 # 4. CASL Page 200, Question 5
+The Elastic Net objective function (the one that we optimize to find $\hat{\beta^{\ell_1}}$) is
+defined as
+$$
+f(b) = \frac{1}{2n} \lvert\lvert y - Xb \rvert\rvert_2^2 + \lambda\Big((1-\alpha)\lvert\lvert b \rvert\rvert_2^2 + \alpha\lvert\lvert b \rvert\rvert_1\Big),
+$$
+where $\lambda > 0$, $\alpha \in [0,1]$, $y \in \mathbb{R}^n$,
+$X \in \textrm{M}_{n \times p}(\mathbb{R})$, and $b \in \mathbb{R}^p$. We already showed above that
+the sum of convex functions is convex and that the $\ell_1$-norm is convex, so all we need to do to
+show that $f(b)$ is convex is prove that the $\ell_2$-norm sauared is convex and that any constant
+multiple of a convex function is also convex.
+
+On this first front, we note that the $\ell-2$ norm arises from the standard inner product
+$\langle.,.\rangle$ on $\mathbb{R}^n$ (or $\mathbb{R}^p$):
+$\lvert\lvert x \rvert\rvert_2^2 \triangleq \langle x,x \rangle$. The standard inner product obeys the
+Cauchy-Schwarz Inequality
+$\lvert \langle x,y \rangle \rvert \leq \lvert\lvert x \rvert\rvert_2 \lvert\lvert y \rvert\rvert_2$,
+which we can use to show that the $\ell_2$-norm obeys the Triangle Inequality
+$\lvert\lvert x+y \rvert\rvert_2 \leq \lvert\lvert x \rvert\rvert_2 + \lvert\lvert y \rvert\rvert_2$.
+Since $t \in [0,1]$ means $t$ and $1-t$ are both non-negative, we can move them out of the norm:
+$$\lvert\lvert tx + (1-t)y \rvert\rvert_2 \leq \lvert\lvert tx \rvert\rvert_2 + \lvert\lvert (1-t)y \rvert\rvert_2 = t \lvert\lvert x \rvert\rvert_2 + (1-t) \lvert\lvert y \rvert\rvert_2,$$
+$\forall x,y \in \mathbb{R}^n$ (or $\mathbb{R}^p$). By definition, this means that the $\ell_2$-norm
+is convex.
 
 
 # 5. CASL Page 200, Question 6
