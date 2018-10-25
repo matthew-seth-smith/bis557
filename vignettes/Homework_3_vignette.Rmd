@@ -1,0 +1,75 @@
+---
+title: "Homework 2"
+author: "Matthew Smith"
+date: "10/25/2018"
+output:
+  html_document:
+    self_contained: yes
+    toc: true
+---
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Basis Expansion and LASSO}
+-->
+
+# 1. CASL Page 117, Question 7?
+
+
+# 2. CASL Page 200, Question 3
+By the Definition in Section 7.4 (Equation 7.25), a function $f:\mathbb{R}^p\to\mathbb{R}$ is
+*convex* if $\forall b_1, b_2 \in \mathbb{R}^p$ and $\forall t \in [0,1]$, we have
+$$
+f(tb_1 + (1-t)b_2) \leq tf(b_1) + (1-t)f(b_2).
+$$
+If $f,g:\mathbb{R}^p\to\mathbb{R}$ are both convex, and $h = f + g$, then
+$\forall b_1, b_2 \in \mathbb{R}^p$ and $\forall t \in [0,1]$,
+$$
+\begin{array}{rcll}
+h(tb_1 + (1-t)b_2) & = & (f+g)(tb_1 + (1-t)b_2)\\
+ & = & f(tb_1 + (1-t)b_2) + g(tb_1 + (1-t)b_2)\\
+ & \leq & tf(b_1) + (1-t)f(b_2) + g(tb_1 + (1-t)b_2)\\
+ & \leq & tf(b_1) + (1-t)f(b_2) + tg(b_1) + (1-t)g(b_2)\\
+ & = & tf(b_1) + tg(b_1) + (1-t)f(b_2) + (1-t)g(b_2)\\
+ & = & t(f+g)(b_1) + (1-t)(f+g)(b_2)\\
+ & = & th(b_1) + (1-t)(f+g)(b_2).\\
+\end{array}
+$$
+Thus $h(tb_1 + (1-t)b_2) \leq th(b_1) + (1-t)(f+g)(b_2)$ $\forall b_1, b_2 \in \mathbb{R}^p$ and
+$\forall t \in [0,1]$. So, if $f$ and $g$ are both convex functions, then their sum $h=f+g$ is as
+well.
+
+
+# 3. CASL Page 200, Question 4
+First we will show that the absolute value function is convex. We will use the above definition for
+convex functions. Since $t\in[0,1]$, $t$ and $1-t$ are both non-negative. This means,
+$\forall x \in \mathbb{R}$, $\lvert tx \rvert = t \lvert x \rvert$ and
+$\lvert (1-t)x \rvert = (1-t) \lvert x \rvert$. The absolute value function also follows the
+*Triangle Inequality*: $\forall x,y \in \mathbb{R}$,
+$\lvert x+y \rvert \leq \lvert x \rvert + \lvert y \rvert$. Then, $\forall x,y \in \mathbb{R}$ and
+$\forall t \in [0,1]$,
+$$
+\begin{array}{rcll}
+\lvert tx + (1-t)y \rvert & \leq & \lvert tx \rvert + \lvert (1-ty) \vert\\
+ & = & t \lvert x \rvert + (1-t) \lvert y \rvert.\\
+\end{array}
+$$
+By definition, this means that the absolute value function is convex.
+
+In the previous question, we showed that the sum of two convex functions is also convex. Using
+induction, we can show that *any* finite sum of $p$ convex functions is also convex. The above proof
+would work both as the base case and the induction step.
+
+The $\ell_1$-norm is defined as
+$\lvert\lvert \vec{x} \rvert\rvert_1 = \sum_{i=1}^p \lvert x_i \rvert$, $\forall x \in \mathbb{R}^p$.
+Since each $\lvert x_i \rvert$ is a convex function, the sum of all these convex absolute value
+functions is also convex. Then, the $\ell_1$-norm is convex.
+
+
+# 4. CASL Page 200, Question 5
+
+
+# 5. CASL Page 200, Question 6
+
+
+
+
