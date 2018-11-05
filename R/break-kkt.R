@@ -21,8 +21,13 @@ break_kkt <- function(b, X_stand, y, lambda){
     print("Error: incorrect number of dimensions somewhere.")
   }else{
     ret <- rep(FALSE, length(b)) #Initialize the return object to be a vector of FALSE
+    resids <- y - X_stand %*% b
+    mys <- apply(X_stand, 2, function(xj) crossprod(xj, resids)) / lambda / nrow(X_stand)
+    # May need to round this
+    #browser()
     for(j in 1:length(ret)){ #For each coefficient
-      test_var <- sum(X_stand[,j] * (y - X_stand %*% b)) #Using EQ 7.37 on page 188, using element-wise multiplication before we sum over the rows
+#      browser()
+      test_var <- sum(X_stand[,j] * (y - X_stand %*% b)) /nrow(X_stand) #Using EQ 7.37 on page 188, using element-wise multiplication before we sum over the rows
       s <- test_var / lambda #This is the s-value in the equation to test the KKT Conditions
       if(b[j] > 0){
         ret[j] <- !(s == 1) #We are testing to see if the KKT Conditions are BROKEN, not satisfied
