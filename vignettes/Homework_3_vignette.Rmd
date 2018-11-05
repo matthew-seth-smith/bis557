@@ -15,7 +15,6 @@ output:
 # 1. CASL Page 117, Question 7
 ```{r}
 library(bis557)
-install.packages("glmnet")
 library(glmnet) #For the glmnet function
 ```
 
