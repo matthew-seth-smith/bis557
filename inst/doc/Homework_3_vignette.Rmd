@@ -125,6 +125,8 @@ b <- fit$glmnet.fit$beta[,fit$lambda == lambda]
 b
 break_kkt(b, X, y, lambda)
 ```
+Since we calculated `b` using coordinate descent in the `cv.glmnet` function, we would expect the KKT
+Conditions would be fulfilled for every coefficient, and this is the case.
 
 Now we change one of the values and see if that breaks the KKT Conditions.
 ```{r}
@@ -135,3 +137,10 @@ b_updated2 <- b
 b_updated2["Speciesversicolor"] <- 0.01 #This was originally zero
 break_kkt(b_updated2, X, y, lambda)
 ```
+We changed one of the non-zero coefficients to zero in `b_updated`, and this broke the KKT
+Conditions. Since this was a fairly big change (`0.99187334` to `0`), the change moved the
+coefficient vector far away from the optimal, and now all of the coefficients break the KKT
+Conditions. In `b_updated2`, we changed the only zero coefficient to `0.01`, which is not as large of
+a change, so now only three of the coefficients break the KKT Conditions. But in general, we can see
+that the `break_kk` function can tell if any of the coefficients from our LASSO linear regression
+breaks the KKT Conditions, up to the accuracy of `glmnet` and our rounding.
