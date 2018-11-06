@@ -4,14 +4,14 @@
 \alias{break_kkt}
 \title{Test where the KKT Conditions are Broken}
 \usage{
-break_kkt(b, X_stand, y, lambda)
+break_kkt(b, X, y, lambda)
 }
 \arguments{
 \item{b}{the coefficient vector to check}
 
-\item{X_stand}{the data matrix for the LASSO regression, assumed to be standardized (mean 0 and variance 1 for each column) prior}
+\item{X}{the data matrix for the LASSO regression, assumed to be standardized (mean 0 and variance 1 for each column) prior. We also assume there is no intercept column}
 
-\item{y}{the vector of responses}
+\item{y}{the vector of responses, which we assume has also had the mean subtracted}
 
 \item{lambda}{the LASSO penalty constant (we assume there is no ridge regression component in this elastic net)}
 }
@@ -22,10 +22,11 @@ A logical vector of the same length as `b` that says whether each coefficient br
 This function returns a logical vector of the same length as the coefficient vector that says where the Karush-Kuhn-Tucker (KKT) Conditions are broken.
 }
 \examples{
-X <- model.matrix(Sepal.Length ~ ., iris)
-plot(cv.glmnet(X, iris$Sepal.Length, standardize=TRUE)) #Get an estimate for the optimal lambda
-lambda <- exp(-4.5) #Based on the above plot, after exponentiating
-b <- glmnet(X, iris$Sepal.Length, lambda=lambda, standardize=TRUE)$beta
-X_stand <- scale(X) #Standardize the data matrix X before plugging it into this function
-break_kkt(b, X_stand, iris$Sepal.Length, lambda)
+X <- scale(model.matrix(Sepal.Length ~ . -1, iris))
+y <- iris$Sepal.Length - mean(iris$Sepal.Length)
+plot(cv.glmnet(X, y, standardize=FALSE, intercept=FALSE)) #Get an estimate for the optimal lambda
+We will use the largest lambda value that is within one standard deviation of the lambda that gives the minimum MSE
+lambda <- fit$lambda.1se
+b <- fit$glmnet.fit$beta[,fit$lambda == lambda]
+break_kkt(b, X, y, lambda)
 }
