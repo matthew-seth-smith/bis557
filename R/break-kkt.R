@@ -8,11 +8,10 @@
 #' @return A logical vector of the same length as `b` that says whether each coefficient breaks the KKT Conditions
 #' @import stats
 #' @import MASS
-#' @import glmnet
 #' @examples
 #' X <- scale(model.matrix(Sepal.Length ~ . -1, iris))
 #' y <- iris$Sepal.Length - mean(iris$Sepal.Length)
-#' plot(cv.glmnet(X, y, standardize=FALSE, intercept=FALSE)) #Get an estimate for the optimal lambda
+#' plot(glmnet::cv.glmnet(X, y, standardize=FALSE, intercept=FALSE)) #Get an estimate for the optimal lambda
 #' We will use the largest lambda value that is within one standard deviation of the lambda that gives the minimum MSE
 #' lambda <- fit$lambda.1se
 #' b <- fit$glmnet.fit$beta[,fit$lambda == lambda]
