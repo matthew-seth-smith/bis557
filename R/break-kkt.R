@@ -8,6 +8,7 @@
 #' @return A logical vector of the same length as `b` that says whether each coefficient breaks the KKT Conditions
 #' @import stats
 #' @import MASS
+#' @import glmnet
 #' @examples
 #' X <- scale(model.matrix(Sepal.Length ~ . -1, iris))
 #' y <- iris$Sepal.Length - mean(iris$Sepal.Length)
