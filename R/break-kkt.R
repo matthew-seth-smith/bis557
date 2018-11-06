@@ -11,7 +11,8 @@
 #' @examples
 #' X <- scale(model.matrix(Sepal.Length ~ . -1, iris))
 #' y <- iris$Sepal.Length - mean(iris$Sepal.Length)
-#' plot(glmnet::cv.glmnet(X, y, standardize=FALSE, intercept=FALSE)) #Get an estimate for the optimal lambda
+#' fit <- glmnet::cv.glmnet(X, y, standardize=FALSE, intercept = FALSE)
+#' plot(fit) #Get an estimate for the optimal lambda
 #' # We will use the largest lambda value that is within one standard deviation of the lambda that gives the minimum MSE
 #' lambda <- fit$lambda.1se
 #' b <- fit$glmnet.fit$beta[,fit$lambda == lambda]
