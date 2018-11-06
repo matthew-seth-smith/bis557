@@ -35,10 +35,10 @@ h(tb_1 + (1-t)b_2) & = & (f+g)(tb_1 + (1-t)b_2)\\
  & \leq & tf(b_1) + (1-t)f(b_2) + tg(b_1) + (1-t)g(b_2)\\
  & = & tf(b_1) + tg(b_1) + (1-t)f(b_2) + (1-t)g(b_2)\\
  & = & t(f+g)(b_1) + (1-t)(f+g)(b_2)\\
- & = & th(b_1) + (1-t)(f+g)(b_2).\\
+ & = & th(b_1) + (1-t)h(b_2).\\
 \end{array}
 $$
-Thus $h(tb_1 + (1-t)b_2) \leq th(b_1) + (1-t)(f+g)(b_2)$ $\forall b_1, b_2 \in \mathbb{R}^p$ and
+Thus $h(tb_1 + (1-t)b_2) \leq th(b_1) + (1-t)h(b_2)$ $\forall b_1, b_2 \in \mathbb{R}^p$ and
 $\forall t \in [0,1]$. So, if $f$ and $g$ are both convex functions, then their sum $h=f+g$ is as
 well.
 
@@ -85,17 +85,54 @@ the sum of convex functions is convex and that the $\ell_1$-norm is convex, so a
 show that $f(b)$ is convex is prove that the $\ell_2$-norm sauared is convex and that any constant
 multiple of a convex function is also convex.
 
-On this first front, we note that the $\ell-2$ norm arises from the standard inner product
-$\langle.,.\rangle$ on $\mathbb{R}^n$ (or $\mathbb{R}^p$):
-$\lvert\lvert x \rvert\rvert_2^2 \triangleq \langle x,x \rangle$. The standard inner product obeys the
-Cauchy-Schwarz Inequality
-$\lvert \langle x,y \rangle \rvert \leq \lvert\lvert x \rvert\rvert_2 \lvert\lvert y \rvert\rvert_2$,
-which we can use to show that the $\ell_2$-norm obeys the Triangle Inequality
-$\lvert\lvert x+y \rvert\rvert_2 \leq \lvert\lvert x \rvert\rvert_2 + \lvert\lvert y \rvert\rvert_2$.
-Since $t \in [0,1]$ means $t$ and $1-t$ are both non-negative, we can move them out of the norm:
-$$\lvert\lvert tx + (1-t)y \rvert\rvert_2 \leq \lvert\lvert tx \rvert\rvert_2 + \lvert\lvert (1-t)y \rvert\rvert_2 = t \lvert\lvert x \rvert\rvert_2 + (1-t) \lvert\lvert y \rvert\rvert_2,$$
-$\forall x,y \in \mathbb{R}^n$ (or $\mathbb{R}^p$). By definition, this means that the $\ell_2$-norm
-is convex.
+On this first fron, we note that the $\ell_2$-norm squared can be defined, for a vector $x$ in
+$\mathbb{R}^n$ (or $\mathbb{R}^p$) as
+$$
+\lvert\lvert x \rvert\rvert_2^2 \triangleq \sum_{i=1}^n\lvert x_i \rvert^2.
+$$
+Since we are only looking at $\mathbb{R}^n$ and not $\mathbb{C}^n$, we do not need to worry about the
+absolute values in the squared components:
+$$
+\lvert\lvert x \rvert\rvert_2^2 = \sum_{i=1}^n x_i^2.
+$$
+This simplification allows us just to look at the square function. We already showed that the sum of
+convex functions is also convex, so if we can show that each individual square function in
+$\mathbb{R}$ is convex, then their sum will be as well, and so will the $\ell_2$-norm squared.
+
+To check the convexity of the square function, we will use the second derivative test. That is, for a
+function $g:\mathbb{R}\to\mathbb{R}$, $g$ is convex wherever
+$\frac{\textrm{d}^2g}{\textrm{d}x^2} > 0$. Luckily for us, if $g(x) = x^2$, then
+$\frac{\textrm{d}^2g}{\textrm{d}x^2} = 2 > 0$ everywhere in $\mathbb{R}$, so the square function
+$g(x) = x^2$ is convex everywhere in $\mathbb{R}$.
+
+Now we can consider each $x_i^2$ to really be a function from $\mathbb{R}^n$ to $\mathbb{R}$, where
+we only return the square of the $i$th element from the vector $x$. This function is still a convex
+function, but now we have the same domain and codomain as the $\ell_2$-norm squared. Using what we
+determined previously about the sum of convex functions, we know that the $\ell_2$-norm squared,
+which is the sum of these convex square functions from $\mathbb{R}^n$ to $\mathbb{R}$, is also
+convex. It is convex both from $\mathbb{R}^n$ to $\mathbb{R}$ and from $\mathbb{R}^p$ to
+$\mathbb{R}$.
+
+Lastly, we need to check that a constant multiple of a convex function is also convex, which is
+pretty straightforward. If $g:\mathbb{R}^p\to\mathbb{R}$ is convex, $a$ is a constant in
+$\mathbb{R}$, and $h = ag$, then we can easily show $h$ is convex:
+$\forall b_1, b_2 \in \mathbb{R}^p$ and $\forall t \in [0,1]$, we have
+$$
+\begin{array}{rcll}
+h(tb_1 + (1-t)b_2) & = & ag(tb_1 + (1-t)b_2)\\
+ & \leq & a(tg(b_1) + (1-t)g(b_2))\\
+ & = & atg(b_1) + a(1-t)g(b_2)\\
+ & = & tag(b_1) + (1-t)ag(b_2)\\
+ & = & th(b_1) + (1-t)h(b_2).\\
+\end{array}
+$$
+Thus, $h(tb_1 + (1-t)b_2) \leq th(b_1) + (1-t)h(b_2)$, so $h = ag$ is convex if $g$ is convex.
+
+Putting this all together, we see that the Elastic Net objective function
+$f(b) = \frac{1}{2n} \lvert\lvert y - Xb \rvert\rvert_2^2 + \lambda\Big((1-\alpha)\lvert\lvert b \rvert\rvert_2^2 + \alpha\lvert\lvert b \rvert\rvert_1\Big)$
+is convex, because it is made up of sums and constant multiples of the $\ell_1$-norm and
+$\ell_2$-norm squared functions, all of which are convex, leading to the larger function being
+convex.
 
 
 # 5. CASL Page 200, Question 6
