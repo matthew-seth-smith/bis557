@@ -2,6 +2,8 @@
 title: "Homework 3"
 author: "Matthew Smith"
 date: "10/25/2018"
+header-includes:
+  - \usepackage{bbm}
 output:
   html_document:
     self_contained: yes
@@ -13,10 +15,23 @@ output:
 -->
 
 # 1. CASL Page 117, Question 7
+In this problem, we create a density function using the Epanechnikov Kernel. For $x \in \mathbb{R}$,
+the Epanechnikov Kernel is defined as
+$$
+K(x) = \frac{3}{4}(1-x^2)\mathbbm{1}
+$$
+
+
 ```{r}
 library(bis557)
-library(glmnet) #For the glmnet function
 ```
+
+
+Questions:
+Page 80: K_h = K(x/h) and not K(x/n) in definition?
+What is the graph on Page 82? Does not seem relevant...
+On Page 82, how take MSE or mean of one number? Maybe make vector of squared errors and then take
+mean of that?
 
 
 # 2. CASL Page 200, Question 3
@@ -152,6 +167,7 @@ break_kkt
 We test this function using the example from the `iris` data set included in the documentation for
 `kkt_break`.
 ```{r}
+library(glmnet) #For the glmnet function
 X <- scale(model.matrix(Sepal.Length ~ . -1, iris))
 y <- iris$Sepal.Length - mean(iris$Sepal.Length)
 fit <- cv.glmnet(X, y, standardize=FALSE, intercept = FALSE)

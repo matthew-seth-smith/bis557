@@ -2,6 +2,8 @@
 
 S3method(predict,ridge_reg)
 export(break_kkt)
+export(epan_kernel)
+export(kern_density)
 export(linear_model)
 export(ridge_reg)
 import(MASS)
