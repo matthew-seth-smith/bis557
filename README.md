@@ -23,3 +23,15 @@ library(bis557)
 fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 predict(fit_reg, iris)
 ```
+
+In investigating the elastic net linear regression, we created a `break_kkt` function that checks which components of the coefficient vector break the KKT conditions. You can use it like this:
+
+```{R}
+library(bis557)
+X <- scale(model.matrix(Sepal.Length ~ . -1, iris))
+y <- iris$Sepal.Length - mean(iris$Sepal.Length)
+fit <- glmnet::cv.glmnet(X, y, standardize=FALSE, intercept = FALSE)
+lambda <- fit$lambda.1se
+b <- fit$glmnet.fit$beta[,fit$lambda == lambda]
+break_kkt(b, X, y, lambda)
+```
