@@ -24,7 +24,7 @@ fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 predict(fit_reg, iris)
 ```
 
-When we studied kernel regression, we made functions for evaluating the Epanechnikov Kernel (`epan_kernel`) and using that kernel to make a density estimator (kern_density). You can use them like this
+When we studied kernel regression, we made functions for evaluating the Epanechnikov Kernel (`epan_kernel`) and using that kernel to make a density estimator (`kern_density`). You can use them like this
 
 ```{R}
 library(bis557)
