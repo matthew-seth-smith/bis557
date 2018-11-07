@@ -6,7 +6,6 @@ output:
   html_document:
     self_contained: yes
     toc: true
-    extra_dependencies: ["bbm"]
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
@@ -17,7 +16,7 @@ output:
 In this problem, we create a density function using the Epanechnikov Kernel. For $x \in \mathbb{R}$,
 the Epanechnikov Kernel is defined as
 $$
-K(x) = \frac{3}{4}(1-x^2)\chi_{\{\lvert x \rvert \leq 1\}}.
+K(x) = \frac{3}{4}(1-x^2)\unicode{x1D7D9}_{\{\lvert x \rvert \leq 1\}}.
 $$
 We can easily see that this is non-negative, symmetric about the origin, and integrates to $1$, all
 of the properties we want for a kernel. We generalize this kernel by giving it a bandwidth of
@@ -25,7 +24,7 @@ $h > 0$:
 $$
 \begin{array}{rcll}
 K_h(x) & = & \frac{1}{h}K(\frac{x}{h})\\
- & = & \frac{3}{4h}\Big(1-(\frac{x}{h})^2\Big)\chi_{\{\lvert \frac{x}{h} \rvert \leq 1\}}.\\
+ & = & \frac{3}{4h}\Big(1-(\frac{x}{h})^2\Big)\unicode{x1D7D9}_{\{\lvert \frac{x}{h} \rvert \leq 1\}}.\\
 \end{array}
 $$
 I have written a function `epan_kernel` in the `epan-kernel.R` file contained within this package
@@ -47,19 +46,18 @@ this, using training data `x`, bandwidth `h`, and a vector of test data `x_new`:
 ```{r}
 kern_density
 ```
+We can easily test the performance of this density estimate using the example simple data set
+included in the documentation for the function. Using data at the points
+$\{-4, -3, -2, -1, 0, 1, 2, 3, 4\}$, we see the performance over the range $[-10,10]$ using the
+bandwidths $h=1,2,3,4,5$
+```{r}
+library(ggplot2)
+x_data <- -4:4 #The data vector
+ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=function(x){kern_density(x_data, 1, x)}, aes(color="h=1")) + stat_function(fun=function(x){kern_density(x_data, 2, x)}, aes(color="h=2")) + stat_function(fun=function(x){kern_density(x_data, 3, x)}, aes(color="h=3")) + stat_function(fun=function(x){kern_density(x_data, 5, x)}, aes(color="h=5")) + stat_function(fun=function(x){kern_density(x_data, 8, x)}, aes(color="h=8")) + scale_color_manual("Bandwidth", values=c("red", "orange", "blue", "purple", "black")) + xlim(-10,10)
+```
 
-
-Questions:
-I can't build the vignette. It is saying "Error: processing vignette 'Homework_3_vignette.Rmd' failed with diagnostics:
-subscript out of bounds"
-What kind of hand-made data set should I use? I've been testing it with the example in the package
-How to make the indicator function in .Rmd, or how to include LaTeX package for it?
-Page 80: K_h = K(x/h) and not K(x/n) in definition?
-What is the graph on Page 82? Does not seem relevant...
-On Page 82, how take MSE or mean of one number? Maybe make vector of squared errors and then take
-mean of that?
-Should the 1/h also be in the function for the Epanechnikov Kernel?
-Is unlist(lapply()) ok or should I just use sapply?
+We can see that this density estimator flattens out as the bandwidth $h$ increases, since we are
+including more points for which to average the kernel.
 
 
 # 2. CASL Page 200, Question 3
@@ -195,7 +193,7 @@ break_kkt
 We test this function using the example from the `iris` data set included in the documentation for
 `kkt_break`.
 ```{r}
-library(glmnet) #For the glmnet function
+library(glmnet) #For the cv.glmnet function
 X <- scale(model.matrix(Sepal.Length ~ . -1, iris))
 y <- iris$Sepal.Length - mean(iris$Sepal.Length)
 fit <- cv.glmnet(X, y, standardize=FALSE, intercept = FALSE)
@@ -222,6 +220,6 @@ We changed one of the non-zero coefficients to zero in `b_updated`, and this bro
 Conditions. Since this was a fairly big change (`0.99187334` to `0`), the change moved the
 coefficient vector far away from the optimal, and now all of the coefficients break the KKT
 Conditions. In `b_updated2`, we changed the only zero coefficient to `0.01`, which is not as large of
-a change, so now only three of the coefficients break the KKT Conditions. But in general, we can see
+a change, so much fewer of the coefficients break the KKT Conditions. But in general, we can see
 that the `break_kk` function can tell if any of the coefficients from our LASSO linear regression
 breaks the KKT Conditions, up to the accuracy of `glmnet` and our rounding.

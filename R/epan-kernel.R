@@ -32,10 +32,10 @@ epan_kernel <- function(x, h=1){
 #' kern_density(x, h, x_new)
 #' @export
 kern_density <- function(x, h, x_new){
-  sapply(x_new, function(w){ #We use sapply to vectorize the function, which then returns a vector and not a list
+  vapply(x_new, function(w){ #We use the vapply funcion to vectorize the function, which then returns a vector
     # We vectorize this anonymous function that actually does what we want
-    mean(sapply(x, function(u){ #Now we vectorize over all the values of the test data x
+    mean(vapply(x, function(u){ #Now we vectorize over all the values of the test data x
       epan_kernel(w-u, h) #We use w for the current value of x_new and u for the current value of x
-    })) #For each value w in x_new, we take the arithmetic mean of all these Epanechnikov Kernels
-  })
+    }, FUN.VALUE=as.numeric(NA))) #For each value w in x_new, we take the arithmetic mean of all these Epanechnikov Kernels
+  }, FUN.VALUE=as.numeric(NA)) #We use FUN.VALUE to specify the default value type (numeric here)
 }

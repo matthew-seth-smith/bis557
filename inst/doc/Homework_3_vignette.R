@@ -1,11 +1,20 @@
 ## ------------------------------------------------------------------------
 library(bis557)
+epan_kernel
+
+## ------------------------------------------------------------------------
+kern_density
+
+## ------------------------------------------------------------------------
+library(ggplot2)
+x_data <- -4:4 #The data vector
+ggplot(data.frame(x=0), aes(x=x)) + stat_function(fun=function(x){kern_density(x_data, 1, x)}, aes(color="h=1")) + stat_function(fun=function(x){kern_density(x_data, 2, x)}, aes(color="h=2")) + stat_function(fun=function(x){kern_density(x_data, 3, x)}, aes(color="h=3")) + stat_function(fun=function(x){kern_density(x_data, 5, x)}, aes(color="h=5")) + stat_function(fun=function(x){kern_density(x_data, 8, x)}, aes(color="h=8")) + scale_color_manual("Bandwidth", values=c("red", "orange", "blue", "purple", "black")) + xlim(-10,10)
 
 ## ------------------------------------------------------------------------
 break_kkt
 
 ## ------------------------------------------------------------------------
-library(glmnet) #For the glmnet function
+library(glmnet) #For the cv.glmnet function
 X <- scale(model.matrix(Sepal.Length ~ . -1, iris))
 y <- iris$Sepal.Length - mean(iris$Sepal.Length)
 fit <- cv.glmnet(X, y, standardize=FALSE, intercept = FALSE)
