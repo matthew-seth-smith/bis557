@@ -27,6 +27,7 @@ predict(fit_reg, iris)
 When we studied kernel regression, we made functions for evaluating the Epanechnikov Kernel (`epan_kernel`) and using that kernel to make a density estimator (kern_density). You can use them like this
 
 ```{R}
+library(bis557)
 epan_kernel(-5:5, 3)
 x <- -4:4
 h <- 2
