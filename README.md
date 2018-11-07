@@ -24,6 +24,16 @@ fit_reg <- ridge_reg(Sepal.Length ~., 1, iris)
 predict(fit_reg, iris)
 ```
 
+When we studied kernel regression, we made functions for evaluating the Epanechnikov Kernel (`epan_kernel`) and using that kernel to make a density estimator (kern_density). You can use them like this
+
+```{R}
+epan_kernel(-5:5, 3)
+x <- -4:4
+h <- 2
+x_new <- -10:10
+kern_density(x, h, x_new)
+```
+
 In investigating the elastic net linear regression, we created a `break_kkt` function that checks which components of the coefficient vector break the KKT conditions. You can use it like this:
 
 ```{R}
