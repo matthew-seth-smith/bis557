@@ -19,7 +19,7 @@ sparse.matrix <- function(a){
     stop("The data.frame to be made a sparse.matrix does not have 3 columns.")
   }
   if(sum(names(a) == c("i", "j", "x")) != 3){ #If the data.frame a does not have the proper column names
-    stop("The object to be made a sparse.matrix does not have the proper column names: i row indeces, j for column indeces, and x for values")
+    stop("The object to be made a sparse.matrix does not have the proper column names: i for row indeces, j for column indeces, and x for values.")
   }
   class(a) <- c("sparse.matrix", class(a)) #Add "sparse.matrix" to the class vector, as the first class
   a #Return the updated vals object
@@ -50,6 +50,15 @@ sparse.matrix <- function(a){
 }
 
 
+# To implement the matrix multiplication of sparse.matrix objects, we define the generic function for %*% and a default function
+#`%*%` <- function(a, b){
+#  UseMethod("%*%", a)
+#}
+#`%*%.default` <- function(a, b){
+#  a %*% b
+#}
+
+
 #' Matrix-Multiply Two sparse.matrix Objects
 #' 
 #' @description This method is the implementation of the sparse_multiply from the homework. It matrix-multiplies two sparse.matrix objects.
@@ -60,7 +69,7 @@ sparse.matrix <- function(a){
 #' @examples
 #' 
 #' @export
-`%*%.sparse.matrix` <- function(a, b){ #We use the tick marks because %*% is an infix operator. We do not need the generic function because %*% already exists as a method in R
+`%*%.sparse.matrix` <- function(a, b){ #We use the tick marks because %*% is an infix operator
   if(!inherits(b, "sparse.matrix")){ #The S3 dispatch method only checks that a is a sparse.matrix when calling this method, so here we check that b is as well
     stop("The object b is not a sparse.matrix.")
   }
@@ -77,9 +86,24 @@ sparse.matrix <- function(a){
     a_i <- a[which(a$i==i),] #Takes the ith row of a by finding all of the rows of the data.frame that have i as the i-value
     for(j in unique_cols){ #Each column of b determines the columns of the product matrix c
       b_j <- b[which(b$j==j),] #Takes the jth column of b by finding all of the rows of the data.frame that have j as the j-value
-      
+      k_vector <- intersect(a_i$j, b_j$i) #A vector of of the shared indeces for the columns of a[i,] and rows of b[,j]
+      if(length(k_vector) > 0){ #If there is at least one overlap
+        # To find where in a_i and b_j these indeces occur, we name their rows
+        row.names(a_i) <- a_i$j
+        row.names(b_j) <- b_j$i
+        
+        # We take the inner product (dot product) if row a_i and column b_j
+        c_new <- as.numeric(
+          as.matrix(a_i[as.character(k_vector),"x"]) %*% as.matrix(b_j[as.character(k_vector),"x"]))
+        #c_new <- as.matrix(a_i$x[row.names=k_vector]) %*% as.matrix(b_j$x[row.names=k_vector])
+        
+        # We lastly append this new row to c
+        c <- rbind(c, c(i, j, c_new))
+      }
     }
   }
+  colnames(c) <- c("i", "j", "x") #We reset the column names of c
+  c #Return the product sparse.matrix c
 }
 
 
