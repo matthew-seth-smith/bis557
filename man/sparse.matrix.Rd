@@ -4,17 +4,23 @@
 \alias{sparse.matrix}
 \title{Construct a sparse.matrix Object}
 \usage{
-sparse.matrix(a)
+sparse.matrix(i, j, x, dims = c(max(i), max(j)))
 }
 \arguments{
-\item{a}{The object to make into a sparse.matrix}
+\item{i}{A vector of row indeces of the non-zero entries of the sparse.matrix}
+
+\item{j}{A vector of column indeces of the non-zero entries of the sparse.matrix}
+
+\item{x}{A vector of values for the non-zero entries of the sparse.matrix}
+
+\item{dims}{A vector of the desired dimensions of the sparse.matrix. By default, these are the largest coordinates}
 }
 \value{
-The input object, but with "sparse.matrix" appended to the first spot in its class vector
+A sparse.matrix object, which is a list of a data.frame with a column i of row indeces, a column j of column indeces, and a column x of values for non-zero entries; and a vector of dimensions
 }
 \description{
-This functions creates an instance of the sparse.matrix object, just adding "sparse.matrix" to the class vector. We assume that the object is a properly formatted data.frame.
+This functions creates an instance of the sparse.matrix object from scratch as a data.frame. By default, the dimensions will be the largest coordinates.
 }
 \examples{
-X <- sparse.matrix(X)
+a <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1))
 }

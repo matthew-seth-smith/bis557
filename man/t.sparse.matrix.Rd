@@ -7,15 +7,15 @@
 t.sparse.matrix(a)
 }
 \arguments{
-\item{a}{A sparse.matrix object (constructed from a data.frame)}
+\item{a}{A sparse.matrix object}
 }
 \value{
 A sparse.matrix object that is the matrix transpose of a
 }
 \description{
-This method transposes a sparse.matrix object. Since we only record the non-zero entries in a sparse.matrix, all we need to do is reverse those entries' row and column indeces.
+This method transposes a sparse.matrix object. Since we only record the non-zero entries in a sparse.matrix, all we need to do is reverse those entries' row and column indeces, as well as the dimensions.
 }
 \examples{
-a <- sparse.matrix(data.frame(i=c(1,2), j=c(1,1), x=c(3,1)))
+a <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1))
 t(a)
 }
