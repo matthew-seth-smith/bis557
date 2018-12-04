@@ -4,7 +4,7 @@
 \alias{\%*\%.sparse.matrix}
 \title{Matrix-Multiply Two sparse.matrix Objects}
 \usage{
-"\%*\%.sparse.matrix"(a, b)
+\method{\%*\%}{sparse.matrix}(a, b)
 }
 \arguments{
 \item{a}{A sparse.matrix object}

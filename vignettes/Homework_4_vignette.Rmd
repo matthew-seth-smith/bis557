@@ -13,3 +13,131 @@ output:
 -->
 
 # 1. CASL Number 2 in Exercises 5.8
+In Equation $5.19$, the Hessian matrix for the log-likelihood function $\ell$ in a logistic model is
+given by
+$$
+H(\ell) = X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X
+$$
+In effect, this is the matrix $X^tX$ with weights of the variance of each of the $n$ observations. For
+standard Linear Models with Ordinary Least Squares, the matrix $X^tX$ is the Hessian. We can make the
+linear Hessian $X^tX$ well-conditioned by making $X$ have values that do not change by much. In our
+example, we will make $X$ just a diagonal matrix with entries from $5$ to $1$:
+$$
+X = \begin{pmatrix}
+5 & 0 & 0 & 0 & 0\\
+0 & 4 & 0 & 0 & 0\\
+0 & 0 & 3 & 0 & 0\\
+0 & 0 & 0 & 2 & 0\\
+0 & 0 & 0 & 0 & 1\\
+\end{pmatrix}.
+$$
+Calculating $X^tX$ is easy for this diagonal matrix:
+$$
+X^tX = \begin{pmatrix}
+25 & 0 & 0 & 0 & 0\\
+0 & 16 & 0 & 0 & 0\\
+0 & 0 & 9 & 0 & 0\\
+0 & 0 & 0 & 4 & 0\\
+0 & 0 & 0 & 0 & 1\\
+\end{pmatrix}.
+$$
+This matrix is already diagonal, so its eigenvalues are $\{25,16,9,4,1\}$. Its singular values are the
+square roots of the eigenvalues, or $\{5,4,3,2,1\}$. The condition number is just the largest singular
+value divided by the smallest:
+$$
+cond(X^tX) = \frac{5}{1} = 5.
+$$
+If we want to make this poorly-conditioned, we should make the first singular value much larger than
+the last. The function $f(p)=p(1-p)$ has a maximum value of $0.25$ at $p=0.5$ and approaches $0$ as
+$p\to0$ and $p\to1$. So if we make $p_1=0.5$ and $p_5=10^{-20}$, the resulting logistic Hessian
+$X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X$ should be poorly-conditioned. We can make the
+remaining $p_i$-values equal to $0.5$ for ease of calculation, since they won't affect the condition
+number.
+$$
+\begin{array}{rcll}
+cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) & = & cond(X^t \begin{pmatrix}
+0.5*0.5 & 0 & 0 & 0 & 0\\
+0 & 0.5*0.5 & 0 & 0 & 0\\
+0 & 0 & 0.5*0.5 & 0 & 0\\
+0 & 0 & 0 & 0.5*0.5 & 0\\
+0 & 0 & 0 & 0 & 10^{-20}(1-10^{-20})\\
+\end{pmatrix} X)\\
+ & \approx & cond(X^t \begin{pmatrix}
+0.25 & 0 & 0 & 0 & 0\\
+0 & 0.25 & 0 & 0 & 0\\
+0 & 0 & 0.25 & 0 & 0\\
+0 & 0 & 0 & 0.25 & 0\\
+0 & 0 & 0 & 0 & 10^{-20}\\
+\end{pmatrix} X)\\
+ & = & cond(\begin{pmatrix}
+5 & 0 & 0 & 0 & 0\\
+0 & 4 & 0 & 0 & 0\\
+0 & 0 & 3 & 0 & 0\\
+0 & 0 & 0 & 2 & 0\\
+0 & 0 & 0 & 0 & 1\\
+\end{pmatrix}
+\begin{pmatrix}
+0.25 & 0 & 0 & 0 & 0\\
+0 & 0.25 & 0 & 0 & 0\\
+0 & 0 & 0.25 & 0 & 0\\
+0 & 0 & 0 & 0.25 & 0\\
+0 & 0 & 0 & 0 & 10^{-20}\\
+\end{pmatrix}
+\begin{pmatrix}
+5 & 0 & 0 & 0 & 0\\
+0 & 4 & 0 & 0 & 0\\
+0 & 0 & 3 & 0 & 0\\
+0 & 0 & 0 & 2 & 0\\
+0 & 0 & 0 & 0 & 1\\
+\end{pmatrix})\\
+ & = & \frac{\sqrt{5*0.25*5}}{\sqrt{1*10^{-20}*1}}\\
+ & = & \frac{5*0.5}{10^{-10}}\\
+ & = & 2.5 * 10^{10}.\\
+\end{array}\\
+$$
+We can easily take the condition number of the product of the diagonal matrices because the product
+matrix is still diagonal with eigenvalues equivalent to the products of the diagonal entries.
+
+So the linear Hessian $X^tX$ is well-conditioned with condition number $5$, but the logistic Hessian
+$X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X$ is not, since it has condition number $2.5*10^{10}$.
+
+
+# 2. CASL Number 4 in Exercises 5.8
+
+
+# 3.
+In the `sparse.matrix_class.R` file contained in the `R` directory of this package, I have created all
+of the necessary functions for a `sparse.matrix` class. The first is what would be called the intance
+method if this were object-oriented programming: `sparse.matrix()` creates a `sparse.matrix` object
+from a vector `i` for the rows of the matrix's non-zero entries, a vector `j` for the columns of the
+matrix's non-zero entries, and a vector `x` for the values of the non-zero entries. There is an
+optional parameter `dims` that is a vector of length `2` for the dimensions of the matrix.
+```{r}
+sparse.matrix
+```
+The `sparse.matrix` object is a list of a `data.frame` called `entries` that has columns `i`, `j`, and
+`x` and a vector `dims` of the dimensions of the matrix. By default, `dims` will be largest
+coordinates (the largest entries in the `i` and `j` vectors).
+
+We also defined matrix addition, matrix multiplication, and matrix transposition for the
+`sparse.matrix` class:
+```{r}
+`+.sparse.matrix`
+`%*%.sparse.matrix`
+t.sparse.matrix
+```
+The function ``%*%.sparse.matrix`` is my implementation of the `sparse_multiply` function I was
+supposed to make, but it is only defined for `sparse.matrix` objects.
+
+We lastly show examples of these functions on small `sparse.matrix` objects:
+```{r}
+a <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1))
+b <- sparse.matrix(i=c(1,2,3), j=c(1,1,2), x=c(4.4,1.2,3))
+c <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1), dims=c(3,2))
+a
+b
+c
+b + c
+b %*% a
+t(a)
+```
