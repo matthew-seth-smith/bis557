@@ -131,6 +131,8 @@ $(document).ready(function () {
 <div id="TOC">
 <ul>
 <li><a href="#casl-number-2-in-exercises-5.8">1. CASL Number 2 in Exercises 5.8</a></li>
+<li><a href="#casl-number-4-in-exercises-5.8">2. CASL Number 4 in Exercises 5.8</a></li>
+<li><a href="#section">3.</a></li>
 </ul>
 </div>
 
@@ -140,6 +142,239 @@ $(document).ready(function () {
 -->
 <div id="casl-number-2-in-exercises-5.8" class="section level1">
 <h1>1. CASL Number 2 in Exercises 5.8</h1>
+<p>In Equation <span class="math inline">\(5.19\)</span>, the Hessian matrix for the log-likelihood function <span class="math inline">\(\ell\)</span> in a logistic model is given by <span class="math display">\[
+H(\ell) = X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X
+\]</span> In effect, this is the matrix <span class="math inline">\(X^tX\)</span> with weights of the variance of each of the <span class="math inline">\(n\)</span> observations. For standard Linear Models with Ordinary Least Squares, the matrix <span class="math inline">\(X^tX\)</span> is the Hessian. We can make the linear Hessian <span class="math inline">\(X^tX\)</span> well-conditioned by making <span class="math inline">\(X\)</span> have values that do not change by much. In our example, we will make <span class="math inline">\(X\)</span> just a diagonal matrix with entries from <span class="math inline">\(5\)</span> to <span class="math inline">\(1\)</span>: <span class="math display">\[
+X = \begin{pmatrix}
+5 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 4 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 3 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 2 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1\\
+\end{pmatrix}.
+\]</span> Calculating <span class="math inline">\(X^tX\)</span> is easy for this diagonal matrix: <span class="math display">\[
+X^tX = \begin{pmatrix}
+25 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 16 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 9 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 4 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1\\
+\end{pmatrix}.
+\]</span> This matrix is already diagonal, so its eigenvalues are <span class="math inline">\(\{25,16,9,4,1\}\)</span>. Its singular values are the square roots of the eigenvalues, or <span class="math inline">\(\{5,4,3,2,1\}\)</span>. The condition number is just the largest singular value divided by the smallest: <span class="math display">\[
+cond(X^tX) = \frac{5}{1} = 5.
+\]</span> If we want to make this poorly-conditioned, we should make the first singular value much larger than the last. The function <span class="math inline">\(f(p)=p(1-p)\)</span> has a maximum value of <span class="math inline">\(0.25\)</span> at <span class="math inline">\(p=0.5\)</span> and approaches <span class="math inline">\(0\)</span> as <span class="math inline">\(p\to0\)</span> and <span class="math inline">\(p\to1\)</span>. So if we make <span class="math inline">\(p_1=0.5\)</span> and <span class="math inline">\(p_5=10^{-20}\)</span>, the resulting logistic Hessian <span class="math inline">\(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X\)</span> should be poorly-conditioned. We can make the remaining <span class="math inline">\(p_i\)</span>-values equal to <span class="math inline">\(0.5\)</span> for ease of calculation, since they won’t affect the condition number. <span class="math display">\[
+\begin{array}{rcll}
+cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) &amp; = &amp; cond(X^t \begin{pmatrix}
+0.5*0.5 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0.5*0.5 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0.5*0.5 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0.5*0.5 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 10^{-20}(1-10^{-20})\\
+\end{pmatrix} X)\\
+ &amp; \approx &amp; cond(X^t \begin{pmatrix}
+0.25 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0.25 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0.25 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0.25 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 10^{-20}\\
+\end{pmatrix} X)\\
+ &amp; = &amp; cond(\begin{pmatrix}
+5 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 4 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 3 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 2 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1\\
+\end{pmatrix}
+\begin{pmatrix}
+0.25 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0.25 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0.25 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0.25 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 10^{-20}\\
+\end{pmatrix}
+\begin{pmatrix}
+5 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 4 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 3 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 2 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1\\
+\end{pmatrix})\\
+ &amp; = &amp; \frac{\sqrt{5*0.25*5}}{\sqrt{1*10^{-20}*1}}\\
+ &amp; = &amp; \frac{5*0.5}{10^{-10}}\\
+ &amp; = &amp; 2.5 * 10^{10}.\\
+\end{array}\\
+\]</span> We can easily take the condition number of the product of the diagonal matrices because the product matrix is still diagonal with eigenvalues equivalent to the products of the diagonal entries.</p>
+<p>So the linear Hessian <span class="math inline">\(X^tX\)</span> is well-conditioned with condition number <span class="math inline">\(5\)</span>, but the logistic Hessian <span class="math inline">\(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X\)</span> is not, since it has condition number <span class="math inline">\(2.5*10^{10}\)</span>.</p>
+</div>
+<div id="casl-number-4-in-exercises-5.8" class="section level1">
+<h1>2. CASL Number 4 in Exercises 5.8</h1>
+</div>
+<div id="section" class="section level1">
+<h1>3.</h1>
+<p>In the <code>sparse.matrix_class.R</code> file contained in the <code>R</code> directory of this package, I have created all of the necessary functions for a <code>sparse.matrix</code> class. The first is what would be called the intance method if this were object-oriented programming: <code>sparse.matrix()</code> creates a <code>sparse.matrix</code> object from a vector <code>i</code> for the rows of the matrix’s non-zero entries, a vector <code>j</code> for the columns of the matrix’s non-zero entries, and a vector <code>x</code> for the values of the non-zero entries. There is an optional parameter <code>dims</code> that is a vector of length <code>2</code> for the dimensions of the matrix.</p>
+<pre class="r"><code>sparse.matrix</code></pre>
+<pre><code>## function(i, j, x, dims=c(max(i), max(j))){
+##   if(length(i) != length(j) || length(j) != length(x) || length(x) != length(i)){
+##     stop(&quot;Unequal lengths of parameters. The number of rows (i), columns (j), and values (x) should be equivalent.&quot;)
+##   }
+##   ret &lt;- list(entries=data.frame(i=i, j=j, x=x), dims=dims) #Store all of the information in a list of a data.frame and a vector
+##   class(ret) &lt;- &quot;sparse.matrix&quot; #Make &quot;sparse.matrix&quot; the class of the return object
+##   ret #Return the updated vals object
+## }
+## &lt;environment: namespace:bis557&gt;</code></pre>
+<p>The <code>sparse.matrix</code> object is a list of a <code>data.frame</code> called <code>entries</code> that has columns <code>i</code>, <code>j</code>, and <code>x</code> and a vector <code>dims</code> of the dimensions of the matrix. By default, <code>dims</code> will be largest coordinates (the largest entries in the <code>i</code> and <code>j</code> vectors).</p>
+<p>We also defined matrix addition, matrix multiplication, and matrix transposition for the <code>sparse.matrix</code> class:</p>
+<pre class="r"><code>`+.sparse.matrix`</code></pre>
+<pre><code>## function(a, b){ #We use the tick marks because + is an infix operator. We do not need the generic function because + already exists as a method in R
+##   if(!inherits(b, &quot;sparse.matrix&quot;)){ #The S3 dispatch method only checks that a is a sparse.matrix when calling this method, so here we check that b is as well
+##     stop(&quot;The object b is not a sparse.matrix.&quot;)
+##   }
+##   if(sum(a$dims != b$dims) &gt; 0){ #We cannot add together two matrices that are not of the same dimensions
+##     stop(&quot;The sparse.matrices must have the same dimensions.&quot;)
+##   }
+##   c &lt;- merge(a$entries, b$entries, by=c(&quot;i&quot;,&quot;j&quot;), all=TRUE, suffixes=c(&quot;1&quot;,&quot;2&quot;)) #Merge the entries of a and b by the rows (i) and columns (j) of non-zero values
+##   c$x1[is.na(c$x1)] &lt;- 0 #Fill in the missing values with 0 for the sum
+##   c$x2[is.na(c$x2)] &lt;- 0 #Fill in the missing values with 0 for the sum
+##   c$x &lt;- c$x1 + c$x2 #Take the sum of the entries for the two sparse.matrix's
+##   c &lt;- c[, c(&quot;i&quot;, &quot;j&quot;, &quot;x&quot;)] #Keep the columns of c corresponding to the rows (i), columns (j), and values (x) of the non-zero entries of the resulting sparse.matrix
+##   ret &lt;- list(entries=c, dims=a$dims) #Create the return object as a list
+##   class(ret) &lt;- &quot;sparse.matrix&quot; #Set the class of the return object to be a sparse.matrix
+##   # A hack because of bad testing.
+##   ret$entries &lt;- ret$entries[order(ret$entries$j),]
+##   rownames(ret$entries) &lt;- seq_len(nrow(ret$entries))
+##   ret
+## }
+## &lt;environment: namespace:bis557&gt;</code></pre>
+<pre class="r"><code>`%*%.sparse.matrix`</code></pre>
+<pre><code>## function(a, b){ #We use the tick marks because %*% is an infix operator
+##   #browser()
+##   if(!inherits(b, &quot;sparse.matrix&quot;)){ #The S3 dispatch method only checks that a is a sparse.matrix when calling this method, so here we check that b is as well
+##     stop(&quot;The object b is not a sparse.matrix.&quot;)
+##   }
+##   if(a$dims[2] != b$dims[1]){ #The number of columns of the first sparse.matrix must equal the number of rows of the second in order for multiplication to be defined
+##     stop(&quot;The number of columns of the first sparse.matrix must equal the number of rows of the second.&quot;)
+##   }
+##   # Since the rows of a determine the rows of the product and the columns of b determine the columns of the product, we must find the unique indeces of the rows of a and columns of b
+##   unique_rows &lt;- unique(a$entries$i) #A vector of all the unique row indeces for non-zero entries of a
+##   unique_cols &lt;- unique(b$entries$j) #A vector of all the unique column indeces for non-zero entries of b
+##   
+##   # Each entry of the product matrix c is the inner product (or dot product) of a row of a and a column of b
+##   # The dot product of row i of a (a[i,]) and column j of b (b([,j])) can only be non-zero if there is at least one shared index k for non-zero entries in a[i,] and b[,j]
+##   # That is, there is a value k such that a[i,k] and b[k,j] is not zero
+##   # If we only take the dot products for these shared indeces, we can avoid unnecessary calculations
+##   c &lt;- data.frame(i=integer(), j=integer(), x=double()) #We initialize c as an empty data.frame
+##   for(i in unique_rows){ #Each row of a determines the rows of the product matrix c
+##     a_i &lt;- a$entries[which(a$entries$i==i),] #Takes the ith row of a by finding all of the rows of the data.frame that have i as the i-value
+##     for(j in unique_cols){ #Each column of b determines the columns of the product matrix c
+##       b_j &lt;- b$entries[which(b$entries$j==j),] #Takes the jth column of b by finding all of the rows of the data.frame that have j as the j-value
+##       k_vector &lt;- intersect(a_i$j, b_j$i) #A vector of of the shared indeces for the columns of a[i,] and rows of b[,j]
+##       if(length(k_vector) &gt; 0){ #If there is at least one overlap
+##         # To find where in a_i and b_j these indeces occur, we name their rows
+##         row.names(a_i) &lt;- a_i$j
+##         row.names(b_j) &lt;- b_j$i
+##         
+##         # We take the inner product (dot product) of row a_i and column b_j, but only for the indeces k_vector
+##         c_new &lt;- as.numeric(
+##           t(as.matrix(a_i[as.character(k_vector),&quot;x&quot;])) %*% as.matrix(b_j[as.character(k_vector),&quot;x&quot;]))
+##         
+##         # We lastly append this new row to c
+##         c &lt;- rbind(c, c(i, j, c_new))
+##       }
+##     }
+##   }
+##   colnames(c) &lt;- c(&quot;i&quot;, &quot;j&quot;, &quot;x&quot;) #We reset the column names of the product c
+##   ret &lt;- list(entries=c, dims=c(a$dims[1], b$dims[2])) #We create the return object as a list, using the proper dimensions
+##   class(ret) &lt;- &quot;sparse.matrix&quot; #Set the class of the return object to be a sparse.matrix
+##   # A hack because of bad testing.
+##   ret$entries &lt;- ret$entries[order(ret$entries$j),]
+##   rownames(ret$entries) &lt;- seq_len(nrow(ret$entries))
+##   ret
+## }
+## &lt;environment: namespace:bis557&gt;</code></pre>
+<pre class="r"><code>t.sparse.matrix</code></pre>
+<pre><code>## function(a){ #We initialize the t() method for the sparse.matrix class. We do not need the generic function because t() already exists as a method in R
+##   a_t &lt;- a$entries #Create the a data.frame of the entries that will be the transpose from the input a
+##   a_t$i &lt;- a$entries$j #Replace the row indeces with the original column indeces
+##   a_t$j &lt;- a$entries$i #Replace the column indeces with the original row indeces
+##   ret &lt;- list(entries=a_t, dims=c(a$dims[2], a$dims[1])) #We create the return object as a list and change the dimensions
+##   class(ret) &lt;- &quot;sparse.matrix&quot; #Set the class of the return object to be a sparse.matrix
+##   ret
+## }
+## &lt;environment: namespace:bis557&gt;</code></pre>
+<p>The function <code>%*%.sparse.matrix</code> is my implementation of the <code>sparse_multiply</code> function I was supposed to make, but it is only defined for <code>sparse.matrix</code> objects.</p>
+<p>We lastly show examples of these functions on small <code>sparse.matrix</code> objects:</p>
+<pre class="r"><code>a &lt;- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1))
+b &lt;- sparse.matrix(i=c(1,2,3), j=c(1,1,2), x=c(4.4,1.2,3))
+c &lt;- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1), dims=c(3,2))
+a</code></pre>
+<pre><code>## $entries
+##   i j x
+## 1 1 1 3
+## 2 2 1 1
+## 
+## $dims
+## [1] 2 1
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;sparse.matrix&quot;</code></pre>
+<pre class="r"><code>b</code></pre>
+<pre><code>## $entries
+##   i j   x
+## 1 1 1 4.4
+## 2 2 1 1.2
+## 3 3 2 3.0
+## 
+## $dims
+## [1] 3 2
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;sparse.matrix&quot;</code></pre>
+<pre class="r"><code>c</code></pre>
+<pre><code>## $entries
+##   i j x
+## 1 1 1 3
+## 2 2 1 1
+## 
+## $dims
+## [1] 3 2
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;sparse.matrix&quot;</code></pre>
+<pre class="r"><code>b + c</code></pre>
+<pre><code>## $entries
+##   i j   x
+## 1 1 1 7.4
+## 2 2 1 2.2
+## 3 3 2 3.0
+## 
+## $dims
+## [1] 3 2
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;sparse.matrix&quot;</code></pre>
+<pre class="r"><code>b %*% a</code></pre>
+<pre><code>## $entries
+##   i j    x
+## 1 1 1 13.2
+## 2 2 1  3.6
+## 3 3 1  3.0
+## 
+## $dims
+## [1] 3 1
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;sparse.matrix&quot;</code></pre>
+<pre class="r"><code>t(a)</code></pre>
+<pre><code>## $entries
+##   i j x
+## 1 1 1 3
+## 2 1 2 1
+## 
+## $dims
+## [1] 1 2
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;sparse.matrix&quot;</code></pre>
 </div>
 
 

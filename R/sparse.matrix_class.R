@@ -48,6 +48,9 @@ sparse.matrix <- function(i, j, x, dims=c(max(i), max(j))){
   c <- c[, c("i", "j", "x")] #Keep the columns of c corresponding to the rows (i), columns (j), and values (x) of the non-zero entries of the resulting sparse.matrix
   ret <- list(entries=c, dims=a$dims) #Create the return object as a list
   class(ret) <- "sparse.matrix" #Set the class of the return object to be a sparse.matrix
+  # A hack because of bad testing.
+  ret$entries <- ret$entries[order(ret$entries$j),]
+  rownames(ret$entries) <- seq_len(nrow(ret$entries))
   ret
 }
 
@@ -57,9 +60,8 @@ sparse.matrix <- function(i, j, x, dims=c(max(i), max(j))){
   UseMethod("%*%", a)
 }
 `%*%.default` <- function(a, b){
-  a %*% b
+  .Primitive("%*%")(a, b)
 }
-
 
 #' Matrix-Multiply Two sparse.matrix Objects
 #' 
@@ -73,6 +75,7 @@ sparse.matrix <- function(i, j, x, dims=c(max(i), max(j))){
 #' b %*% a
 #' @export
 `%*%.sparse.matrix` <- function(a, b){ #We use the tick marks because %*% is an infix operator
+  #browser()
   if(!inherits(b, "sparse.matrix")){ #The S3 dispatch method only checks that a is a sparse.matrix when calling this method, so here we check that b is as well
     stop("The object b is not a sparse.matrix.")
   }
@@ -100,7 +103,7 @@ sparse.matrix <- function(i, j, x, dims=c(max(i), max(j))){
         
         # We take the inner product (dot product) of row a_i and column b_j, but only for the indeces k_vector
         c_new <- as.numeric(
-          as.matrix(a_i[as.character(k_vector),"x"]) %*% as.matrix(b_j[as.character(k_vector),"x"]))
+          t(as.matrix(a_i[as.character(k_vector),"x"])) %*% as.matrix(b_j[as.character(k_vector),"x"]))
         
         # We lastly append this new row to c
         c <- rbind(c, c(i, j, c_new))
@@ -110,6 +113,9 @@ sparse.matrix <- function(i, j, x, dims=c(max(i), max(j))){
   colnames(c) <- c("i", "j", "x") #We reset the column names of the product c
   ret <- list(entries=c, dims=c(a$dims[1], b$dims[2])) #We create the return object as a list, using the proper dimensions
   class(ret) <- "sparse.matrix" #Set the class of the return object to be a sparse.matrix
+  # A hack because of bad testing.
+  ret$entries <- ret$entries[order(ret$entries$j),]
+  rownames(ret$entries) <- seq_len(nrow(ret$entries))
   ret
 }
 
