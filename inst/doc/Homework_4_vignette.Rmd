@@ -113,6 +113,7 @@ from a vector `i` for the rows of the matrix's non-zero entries, a vector `j` fo
 matrix's non-zero entries, and a vector `x` for the values of the non-zero entries. There is an
 optional parameter `dims` that is a vector of length `2` for the dimensions of the matrix.
 ```{r}
+library(bis557)
 sparse.matrix
 ```
 The `sparse.matrix` object is a list of a `data.frame` called `entries` that has columns `i`, `j`, and

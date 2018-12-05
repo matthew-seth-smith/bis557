@@ -212,7 +212,8 @@ cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) &amp; = &amp; cond(X^t \begi
 <div id="section" class="section level1">
 <h1>3.</h1>
 <p>In the <code>sparse.matrix_class.R</code> file contained in the <code>R</code> directory of this package, I have created all of the necessary functions for a <code>sparse.matrix</code> class. The first is what would be called the intance method if this were object-oriented programming: <code>sparse.matrix()</code> creates a <code>sparse.matrix</code> object from a vector <code>i</code> for the rows of the matrix’s non-zero entries, a vector <code>j</code> for the columns of the matrix’s non-zero entries, and a vector <code>x</code> for the values of the non-zero entries. There is an optional parameter <code>dims</code> that is a vector of length <code>2</code> for the dimensions of the matrix.</p>
-<pre class="r"><code>sparse.matrix</code></pre>
+<pre class="r"><code>library(bis557)
+sparse.matrix</code></pre>
 <pre><code>## function(i, j, x, dims=c(max(i), max(j))){
 ##   if(length(i) != length(j) || length(j) != length(x) || length(x) != length(i)){
 ##     stop(&quot;Unequal lengths of parameters. The number of rows (i), columns (j), and values (x) should be equivalent.&quot;)
