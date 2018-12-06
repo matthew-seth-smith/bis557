@@ -50,6 +50,7 @@ break_kkt(b, X, y, lambda)
 When we looked at Generalized Linear Models, we first made a function `glm_irwls_ridge` to calculate the coefficients of a GLM with a ridge penalty. The function is based on the `casl_glm_irwls` function in the textbook. You can use it like this:
 
 ```{R}
+library(bis557)
 n <- 1000
 p <- 3
 X <- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
@@ -61,6 +62,7 @@ beta
 
 We then created a class `sparse.matrix` for sparse matrices. We created methods for an instance function, matrix addition, matrix multiplication, and matrix transposition. You can use the class like this:
 ```{R}
+library(bis557)
 a <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1))
 b <- sparse.matrix(i=c(1,2,3), j=c(1,1,2), x=c(4.4,1.2,3))
 c <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1), dims=c(3,2))
