@@ -123,8 +123,8 @@ coordinates (the largest entries in the `i` and `j` vectors).
 We also defined matrix addition, matrix multiplication, and matrix transposition for the
 `sparse.matrix` class:
 ```{r}
-`+.sparse.matrix`
-`%*%.sparse.matrix`
+bis557:::`+.sparse.matrix`
+bis557:::`%*%.sparse.matrix`
 t.sparse.matrix
 ```
 The function ``%*%.sparse.matrix`` is my implementation of the `sparse_multiply` function I was
