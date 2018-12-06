@@ -46,3 +46,28 @@ lambda <- fit$lambda.1se
 b <- fit$glmnet.fit$beta[,fit$lambda == lambda]
 break_kkt(b, X, y, lambda)
 ```
+
+When we looked at Generalized Linear Models, we first made a function `glm_irwls_ridge` to calculate the coefficients of a GLM with a ridge penalty. The function is based on the `casl_glm_irwls` function in the textbook. You can use it like this:
+
+```{R}
+n <- 1000
+p <- 3
+X <- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
+mu <- 1 - pcauchy(X %*% beta)
+y <- as.numeric(runif(n) > mu)
+beta <- glm_irwls_ridge(X, y, family=binomial(link="cauchit"), lambda=10)
+beta
+```
+
+We then created a class `sparse.matrix` for sparse matrices. We created methods for an instance function, matrix addition, matrix multiplication, and matrix transposition. You can use the class like this:
+```{R}
+a <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1))
+b <- sparse.matrix(i=c(1,2,3), j=c(1,1,2), x=c(4.4,1.2,3))
+c <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1), dims=c(3,2))
+a
+b
+c
+b + c
+b %*% a
+t(a)
+```

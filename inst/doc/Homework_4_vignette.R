@@ -1,10 +1,23 @@
 ## ------------------------------------------------------------------------
+glm_irwls_ridge
+
+## ---- eval=FALSE---------------------------------------------------------
+#  # We do not evaluate this for now because of an error with %*%
+#  n <- 1000
+#  p <- 3
+#  X <- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
+#  mu <- 1 - pcauchy(X %*% beta)
+#  y <- as.numeric(runif(n) > mu)
+#  beta <- glm_irwls_ridge(X, y, family=binomial(link="cauchit"), lambda=10)
+#  beta
+
+## ------------------------------------------------------------------------
 library(bis557)
 sparse.matrix
 
 ## ------------------------------------------------------------------------
-`+.sparse.matrix`
-`%*%.sparse.matrix`
+bis557:::`+.sparse.matrix`
+bis557:::`%*%.sparse.matrix`
 t.sparse.matrix
 
 ## ------------------------------------------------------------------------

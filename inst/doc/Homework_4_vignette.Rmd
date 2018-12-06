@@ -69,7 +69,7 @@ cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) & = & cond(X^t \begin{pmatri
 0 & 0 & 0 & 0.25 & 0\\
 0 & 0 & 0 & 0 & 10^{-20}\\
 \end{pmatrix} X)\\
- & = & cond(\begin{pmatrix}
+ & = & cond\Big(\begin{pmatrix}
 5 & 0 & 0 & 0 & 0\\
 0 & 4 & 0 & 0 & 0\\
 0 & 0 & 3 & 0 & 0\\
@@ -89,7 +89,7 @@ cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) & = & cond(X^t \begin{pmatri
 0 & 0 & 3 & 0 & 0\\
 0 & 0 & 0 & 2 & 0\\
 0 & 0 & 0 & 0 & 1\\
-\end{pmatrix})\\
+\end{pmatrix}\Big)\\
  & = & \frac{\sqrt{5*0.25*5}}{\sqrt{1*10^{-20}*1}}\\
  & = & \frac{5*0.5}{10^{-10}}\\
  & = & 2.5 * 10^{10}.\\
@@ -103,9 +103,45 @@ $X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X$ is not, since it has condition n
 
 
 # 2. CASL Number 4 in Exercises 5.8
+Here we will implement a function that creates a GLM by Iterated Re-Weighted Least Squares (IRWLS)
+with a ridge $\ell^2$ penalty. We will modify the `casl_glm_irwls` function from the textbook to
+create this function, which we will call `glm_irwls_ridge` and place in the `R` directory of this
+package.
+
+When creating this function, we need to decide where to put the $\ell^2$ penalty in the IRWLS 
+procedure for the GLM. We computed the ridge regression coefficient vector in a closed-form solution,
+but the GLM solution involves gradient descent and an iterative procedure. The overlap between the
+two adjustments to the regression problem is the Hessian matrix of the objective function $H(f)$. As
+we iteratively calculate the Hessian for the gradient descent, we calculate a weighted matrix cross
+product $X^tWX$, where $X$ is the data matrix and
+$W = \textrm{diag}(\frac{(\mu^\prime(X\beta))^2}{Var(y)})$ is the weight matrix using
+$\mu_i = \mathbb{E}[y_i] = g^{-1}(x_i^t\beta))$ and link function $g$. For ridge regression, the
+Hessian is $H(f) = 2X^tX + 2\lambda I_p$ with ridge coefficient $\lambda$. Therefore we should use
+$X^tWX + \lambda I_p$ in the iterations. We may be losing the factor of $2$, but this will only
+affect the size of the correction in each iteration, not the direction. The iterative process might
+take longer to converge, but we can still find the optimal $\beta$.
+
+We will reproduce the function below:
+```{r}
+glm_irwls_ridge
+```
+
+As an example of this function, we will adapt the example from Page 130 of
+*A Computational Approach to Statistical Learning* with a ridge coefficient of `lambda=10`. This
+example uses a Cauchy link function.
+```{r, eval=FALSE}
+# We do not evaluate this for now because of an error with %*%
+n <- 1000
+p <- 3
+X <- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
+mu <- 1 - pcauchy(X %*% beta)
+y <- as.numeric(runif(n) > mu)
+beta <- glm_irwls_ridge(X, y, family=binomial(link="cauchit"), lambda=10)
+beta
+```
 
 
-# 3.
+# 3. Implementing the sparse.matrix Class
 In the `sparse.matrix_class.R` file contained in the `R` directory of this package, I have created all
 of the necessary functions for a `sparse.matrix` class. The first is what would be called the intance
 method if this were object-oriented programming: `sparse.matrix()` creates a `sparse.matrix` object
@@ -123,8 +159,8 @@ coordinates (the largest entries in the `i` and `j` vectors).
 We also defined matrix addition, matrix multiplication, and matrix transposition for the
 `sparse.matrix` class:
 ```{r}
-`+.sparse.matrix`
-`%*%.sparse.matrix`
+bis557:::`+.sparse.matrix`
+bis557:::`%*%.sparse.matrix`
 t.sparse.matrix
 ```
 The function ``%*%.sparse.matrix`` is my implementation of the `sparse_multiply` function I was

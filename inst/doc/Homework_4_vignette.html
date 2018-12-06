@@ -132,7 +132,7 @@ $(document).ready(function () {
 <ul>
 <li><a href="#casl-number-2-in-exercises-5.8">1. CASL Number 2 in Exercises 5.8</a></li>
 <li><a href="#casl-number-4-in-exercises-5.8">2. CASL Number 4 in Exercises 5.8</a></li>
-<li><a href="#section">3.</a></li>
+<li><a href="#implementing-the-sparse.matrix-class">3. Implementing the sparse.matrix Class</a></li>
 </ul>
 </div>
 
@@ -178,7 +178,7 @@ cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) &amp; = &amp; cond(X^t \begi
 0 &amp; 0 &amp; 0 &amp; 0.25 &amp; 0\\
 0 &amp; 0 &amp; 0 &amp; 0 &amp; 10^{-20}\\
 \end{pmatrix} X)\\
- &amp; = &amp; cond(\begin{pmatrix}
+ &amp; = &amp; cond\Big(\begin{pmatrix}
 5 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
 0 &amp; 4 &amp; 0 &amp; 0 &amp; 0\\
 0 &amp; 0 &amp; 3 &amp; 0 &amp; 0\\
@@ -198,7 +198,7 @@ cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) &amp; = &amp; cond(X^t \begi
 0 &amp; 0 &amp; 3 &amp; 0 &amp; 0\\
 0 &amp; 0 &amp; 0 &amp; 2 &amp; 0\\
 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1\\
-\end{pmatrix})\\
+\end{pmatrix}\Big)\\
  &amp; = &amp; \frac{\sqrt{5*0.25*5}}{\sqrt{1*10^{-20}*1}}\\
  &amp; = &amp; \frac{5*0.5}{10^{-10}}\\
  &amp; = &amp; 2.5 * 10^{10}.\\
@@ -208,9 +208,39 @@ cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) &amp; = &amp; cond(X^t \begi
 </div>
 <div id="casl-number-4-in-exercises-5.8" class="section level1">
 <h1>2. CASL Number 4 in Exercises 5.8</h1>
+<p>Here we will implement a function that creates a GLM by Iterated Re-Weighted Least Squares (IRWLS) with a ridge <span class="math inline">\(\ell^2\)</span> penalty. We will modify the <code>casl_glm_irwls</code> function from the textbook to create this function, which we will call <code>glm_irwls_ridge</code> and place in the <code>R</code> directory of this package.</p>
+<p>When creating this function, we need to decide where to put the <span class="math inline">\(\ell^2\)</span> penalty in the IRWLS procedure for the GLM. We computed the ridge regression coefficient vector in a closed-form solution, but the GLM solution involves gradient descent and an iterative procedure. The overlap between the two adjustments to the regression problem is the Hessian matrix of the objective function <span class="math inline">\(H(f)\)</span>. As we iteratively calculate the Hessian for the gradient descent, we calculate a weighted matrix cross product <span class="math inline">\(X^tWX\)</span>, where <span class="math inline">\(X\)</span> is the data matrix and <span class="math inline">\(W = \textrm{diag}(\frac{(\mu^\prime(X\beta))^2}{Var(y)})\)</span> is the weight matrix using <span class="math inline">\(\mu_i = \mathbb{E}[y_i] = g^{-1}(x_i^t\beta))\)</span> and link function <span class="math inline">\(g\)</span>. For ridge regression, the Hessian is <span class="math inline">\(H(f) = 2X^tX + 2\lambda I_p\)</span> with ridge coefficient <span class="math inline">\(\lambda\)</span>. Therefore we should use <span class="math inline">\(X^tWX + \lambda I_p\)</span> in the iterations. We may be losing the factor of <span class="math inline">\(2\)</span>, but this will only affect the size of the correction in each iteration, not the direction. The iterative process might take longer to converge, but we can still find the optimal <span class="math inline">\(\beta\)</span>.</p>
+<p>We will reproduce the function below:</p>
+<pre class="r"><code>glm_irwls_ridge</code></pre>
+<pre><code>## function(X, y, family, lambda, maxit=25, tol=1e-10){
+##   beta &lt;- rep(0, ncol(X))
+##   for(j in seq_len(maxit)){
+##     b_old &lt;- beta
+##     eta &lt;- X %*% beta
+##     mu &lt;- family$linkinv(eta)
+##     mu_p &lt;- family$mu.eta(eta)
+##     z &lt;- eta + (y - mu) / mu_p
+##     W &lt;- as.numeric(mu_p^2 / family$variance(mu))
+##     XtX &lt;- crossprod(X, diag(W) %*% X) + diag(rep(lambda, ncol(XtX))) #This is my addition to casl_glm_irwls
+##     Xtz &lt;- crossprod(X, W * z)
+##     beta &lt;- solve(XtX, Xtz)
+##     if(sqrt(crossprod(beta - b_old)) &lt; tol) break
+##   }
+##   beta
+## }
+## &lt;environment: namespace:bis557&gt;</code></pre>
+<p>As an example of this function, we will adapt the example from Page 130 of <em>A Computational Approach to Statistical Learning</em> with a ridge coefficient of <code>lambda=10</code>. This example uses a Cauchy link function.</p>
+<pre class="r"><code># We do not evaluate this for now because of an error with %*%
+n &lt;- 1000
+p &lt;- 3
+X &lt;- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
+mu &lt;- 1 - pcauchy(X %*% beta)
+y &lt;- as.numeric(runif(n) &gt; mu)
+beta &lt;- glm_irwls_ridge(X, y, family=binomial(link=&quot;cauchit&quot;), lambda=10)
+beta</code></pre>
 </div>
-<div id="section" class="section level1">
-<h1>3.</h1>
+<div id="implementing-the-sparse.matrix-class" class="section level1">
+<h1>3. Implementing the sparse.matrix Class</h1>
 <p>In the <code>sparse.matrix_class.R</code> file contained in the <code>R</code> directory of this package, I have created all of the necessary functions for a <code>sparse.matrix</code> class. The first is what would be called the intance method if this were object-oriented programming: <code>sparse.matrix()</code> creates a <code>sparse.matrix</code> object from a vector <code>i</code> for the rows of the matrix’s non-zero entries, a vector <code>j</code> for the columns of the matrix’s non-zero entries, and a vector <code>x</code> for the values of the non-zero entries. There is an optional parameter <code>dims</code> that is a vector of length <code>2</code> for the dimensions of the matrix.</p>
 <pre class="r"><code>library(bis557)
 sparse.matrix</code></pre>
@@ -225,7 +255,7 @@ sparse.matrix</code></pre>
 ## &lt;environment: namespace:bis557&gt;</code></pre>
 <p>The <code>sparse.matrix</code> object is a list of a <code>data.frame</code> called <code>entries</code> that has columns <code>i</code>, <code>j</code>, and <code>x</code> and a vector <code>dims</code> of the dimensions of the matrix. By default, <code>dims</code> will be largest coordinates (the largest entries in the <code>i</code> and <code>j</code> vectors).</p>
 <p>We also defined matrix addition, matrix multiplication, and matrix transposition for the <code>sparse.matrix</code> class:</p>
-<pre class="r"><code>`+.sparse.matrix`</code></pre>
+<pre class="r"><code>bis557:::`+.sparse.matrix`</code></pre>
 <pre><code>## function(a, b){ #We use the tick marks because + is an infix operator. We do not need the generic function because + already exists as a method in R
 ##   if(!inherits(b, &quot;sparse.matrix&quot;)){ #The S3 dispatch method only checks that a is a sparse.matrix when calling this method, so here we check that b is as well
 ##     stop(&quot;The object b is not a sparse.matrix.&quot;)
@@ -246,7 +276,7 @@ sparse.matrix</code></pre>
 ##   ret
 ## }
 ## &lt;environment: namespace:bis557&gt;</code></pre>
-<pre class="r"><code>`%*%.sparse.matrix`</code></pre>
+<pre class="r"><code>bis557:::`%*%.sparse.matrix`</code></pre>
 <pre><code>## function(a, b){ #We use the tick marks because %*% is an infix operator
 ##   #browser()
 ##   if(!inherits(b, &quot;sparse.matrix&quot;)){ #The S3 dispatch method only checks that a is a sparse.matrix when calling this method, so here we check that b is as well
