@@ -6,8 +6,8 @@ Author: Matthew Smith
 Maintainer: Matthew Smith <matthew.s.smith@yale.edu>
 Description: Assignments, code, and digital artifacts for BIS 557.
 License: Apache License 2.0
-RoxygenNote: 6.1.0
-Suggests: testthat, knitr, ggplot2, glmnet
+RoxygenNote: 6.1.1
+Suggests: testthat, knitr, ggplot2, glmnet, rmarkdown
 VignetteBuilder: knitr
 Encoding: UTF-8
 Imports: stats, MASS

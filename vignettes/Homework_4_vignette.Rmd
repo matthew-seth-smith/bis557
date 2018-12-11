@@ -123,6 +123,7 @@ take longer to converge, but we can still find the optimal $\beta$.
 
 We will reproduce the function below:
 ```{r}
+library(bis557)
 glm_irwls_ridge
 ```
 
@@ -168,6 +169,7 @@ supposed to make, but it is only defined for `sparse.matrix` objects.
 
 We lastly show examples of these functions on small `sparse.matrix` objects:
 ```{r}
+library(bis557)
 a <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1))
 b <- sparse.matrix(i=c(1,2,3), j=c(1,1,2), x=c(4.4,1.2,3))
 c <- sparse.matrix(i=c(1,2), j=c(1,1), x=c(3,1), dims=c(3,2))
