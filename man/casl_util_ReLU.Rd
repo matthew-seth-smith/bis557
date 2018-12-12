@@ -13,7 +13,7 @@ casl_util_ReLU(v)
 The original input with negative values truncated to zero
 }
 \description{
-This function (from CASL) is the Rectified Linear Unit (ReLU) activator function usedfor neural networks. ReLU(x) = x if x > 0 and ReLU(x) = 0 otherwise.
+This function (from CASL) is the Rectified Linear Unit (ReLU) activator function used for neural networks. ReLU(x) = x if x > 0 and ReLU(x) = 0 otherwise.
 }
 \examples{
 casl_util_ReLU(rnorm(100))
