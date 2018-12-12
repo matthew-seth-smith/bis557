@@ -56,9 +56,12 @@ sparse.matrix <- function(i, j, x, dims=c(max(i), max(j))){
 
 
 # To implement the matrix multiplication of sparse.matrix objects, we define the generic function for %*% and a default function
+#' @export
 `%*%` <- function(a, b){
   UseMethod("%*%", a)
 }
+
+#' @export
 `%*%.default` <- function(a, b){
   .Primitive("%*%")(a, b)
 }

@@ -123,14 +123,14 @@ take longer to converge, but we can still find the optimal $\beta$.
 
 We will reproduce the function below:
 ```{r}
-glm_irwls_ridge
+library(bis557)
+bis557:::glm_irwls_ridge
 ```
 
 As an example of this function, we will adapt the example from Page 130 of
 *A Computational Approach to Statistical Learning* with a ridge coefficient of `lambda=10`. This
 example uses a Cauchy link function.
-```{r, eval=FALSE}
-# We do not evaluate this for now because of an error with %*%
+```{r}
 n <- 1000
 p <- 3
 X <- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
@@ -149,7 +149,6 @@ from a vector `i` for the rows of the matrix's non-zero entries, a vector `j` fo
 matrix's non-zero entries, and a vector `x` for the values of the non-zero entries. There is an
 optional parameter `dims` that is a vector of length `2` for the dimensions of the matrix.
 ```{r}
-library(bis557)
 sparse.matrix
 ```
 The `sparse.matrix` object is a list of a `data.frame` called `entries` that has columns `i`, `j`, and
