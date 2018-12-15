@@ -1,8 +1,9 @@
 ## ------------------------------------------------------------------------
-glm_irwls_ridge
+library(bis557)
+bis557:::glm_irwls_ridge
 
 ## ---- eval=FALSE---------------------------------------------------------
-#  # We do not evaluate this for now because of an error with %*%
+#  # Not evaluated because of problem with %*%
 #  n <- 1000
 #  p <- 3
 #  X <- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
@@ -12,7 +13,6 @@ glm_irwls_ridge
 #  beta
 
 ## ------------------------------------------------------------------------
-library(bis557)
 sparse.matrix
 
 ## ------------------------------------------------------------------------

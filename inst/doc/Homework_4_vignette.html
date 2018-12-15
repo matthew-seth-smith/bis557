@@ -211,7 +211,8 @@ cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) &amp; = &amp; cond(X^t \begi
 <p>Here we will implement a function that creates a GLM by Iterated Re-Weighted Least Squares (IRWLS) with a ridge <span class="math inline">\(\ell^2\)</span> penalty. We will modify the <code>casl_glm_irwls</code> function from the textbook to create this function, which we will call <code>glm_irwls_ridge</code> and place in the <code>R</code> directory of this package.</p>
 <p>When creating this function, we need to decide where to put the <span class="math inline">\(\ell^2\)</span> penalty in the IRWLS procedure for the GLM. We computed the ridge regression coefficient vector in a closed-form solution, but the GLM solution involves gradient descent and an iterative procedure. The overlap between the two adjustments to the regression problem is the Hessian matrix of the objective function <span class="math inline">\(H(f)\)</span>. As we iteratively calculate the Hessian for the gradient descent, we calculate a weighted matrix cross product <span class="math inline">\(X^tWX\)</span>, where <span class="math inline">\(X\)</span> is the data matrix and <span class="math inline">\(W = \textrm{diag}(\frac{(\mu^\prime(X\beta))^2}{Var(y)})\)</span> is the weight matrix using <span class="math inline">\(\mu_i = \mathbb{E}[y_i] = g^{-1}(x_i^t\beta))\)</span> and link function <span class="math inline">\(g\)</span>. For ridge regression, the Hessian is <span class="math inline">\(H(f) = 2X^tX + 2\lambda I_p\)</span> with ridge coefficient <span class="math inline">\(\lambda\)</span>. Therefore we should use <span class="math inline">\(X^tWX + \lambda I_p\)</span> in the iterations. We may be losing the factor of <span class="math inline">\(2\)</span>, but this will only affect the size of the correction in each iteration, not the direction. The iterative process might take longer to converge, but we can still find the optimal <span class="math inline">\(\beta\)</span>.</p>
 <p>We will reproduce the function below:</p>
-<pre class="r"><code>glm_irwls_ridge</code></pre>
+<pre class="r"><code>library(bis557)
+bis557:::glm_irwls_ridge</code></pre>
 <pre><code>## function(X, y, family, lambda, maxit=25, tol=1e-10){
 ##   beta &lt;- rep(0, ncol(X))
 ##   for(j in seq_len(maxit)){
@@ -230,7 +231,7 @@ cond(X^t \textrm{diag}(\{ p_i(1-p_i) \}_{i=1}^n) X) &amp; = &amp; cond(X^t \begi
 ## }
 ## &lt;environment: namespace:bis557&gt;</code></pre>
 <p>As an example of this function, we will adapt the example from Page 130 of <em>A Computational Approach to Statistical Learning</em> with a ridge coefficient of <code>lambda=10</code>. This example uses a Cauchy link function.</p>
-<pre class="r"><code># We do not evaluate this for now because of an error with %*%
+<pre class="r"><code># Not evaluated because of problem with %*%
 n &lt;- 1000
 p &lt;- 3
 X &lt;- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
@@ -242,8 +243,7 @@ beta</code></pre>
 <div id="implementing-the-sparse.matrix-class" class="section level1">
 <h1>3. Implementing the sparse.matrix Class</h1>
 <p>In the <code>sparse.matrix_class.R</code> file contained in the <code>R</code> directory of this package, I have created all of the necessary functions for a <code>sparse.matrix</code> class. The first is what would be called the intance method if this were object-oriented programming: <code>sparse.matrix()</code> creates a <code>sparse.matrix</code> object from a vector <code>i</code> for the rows of the matrix’s non-zero entries, a vector <code>j</code> for the columns of the matrix’s non-zero entries, and a vector <code>x</code> for the values of the non-zero entries. There is an optional parameter <code>dims</code> that is a vector of length <code>2</code> for the dimensions of the matrix.</p>
-<pre class="r"><code>library(bis557)
-sparse.matrix</code></pre>
+<pre class="r"><code>sparse.matrix</code></pre>
 <pre><code>## function(i, j, x, dims=c(max(i), max(j))){
 ##   if(length(i) != length(j) || length(j) != length(x) || length(x) != length(i)){
 ##     stop(&quot;Unequal lengths of parameters. The number of rows (i), columns (j), and values (x) should be equivalent.&quot;)
@@ -275,6 +275,7 @@ sparse.matrix</code></pre>
 ##   rownames(ret$entries) &lt;- seq_len(nrow(ret$entries))
 ##   ret
 ## }
+## &lt;bytecode: 0x11b1204e0&gt;
 ## &lt;environment: namespace:bis557&gt;</code></pre>
 <pre class="r"><code>bis557:::`%*%.sparse.matrix`</code></pre>
 <pre><code>## function(a, b){ #We use the tick marks because %*% is an infix operator
@@ -321,6 +322,7 @@ sparse.matrix</code></pre>
 ##   rownames(ret$entries) &lt;- seq_len(nrow(ret$entries))
 ##   ret
 ## }
+## &lt;bytecode: 0x112504078&gt;
 ## &lt;environment: namespace:bis557&gt;</code></pre>
 <pre class="r"><code>t.sparse.matrix</code></pre>
 <pre><code>## function(a){ #We initialize the t() method for the sparse.matrix class. We do not need the generic function because t() already exists as a method in R

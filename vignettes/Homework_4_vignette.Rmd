@@ -130,7 +130,8 @@ bis557:::glm_irwls_ridge
 As an example of this function, we will adapt the example from Page 130 of
 *A Computational Approach to Statistical Learning* with a ridge coefficient of `lambda=10`. This
 example uses a Cauchy link function.
-```{r}
+```{r, eval=FALSE}
+# Not evaluated because of problem with %*%
 n <- 1000
 p <- 3
 X <- cbind(1, matrix(rnorm(n * (p-1)), ncol = p-1))
