@@ -13,8 +13,9 @@ output:
 -->
 
 # 1.
-In this question, we compare the LASSO to a dense neural network in predicting hand-written characters
-in the MNIST data set. For a basis of comparison, we use the code from class for the LASSO procedure.
+In this question, we compare the LASSO to a dense neural network in predicting hand-written
+characters in the MNIST data set. For a basis of comparison, we use the code from class (in the
+`first-try.r` file) for the LASSO procedure.
 ```{r}
 library(keras) #For the MNIST data set
 library(glmnet) #For the LASSO
@@ -33,26 +34,131 @@ y_train <- factor(y_train)
 y_test <- factor(y_test)
 
 # We only use use 1000 of the characters so that the training and prediction does not take too long
-s <- sample(seq_along(y_train), 1000)
-fit <- cv.glmnet(x_train[s,], y_train[s], family = "multinomial")
+s_train <- sample(seq_along(y_train), 1000)
+fit <- cv.glmnet(x_train[s_train,], y_train[s_train], family = "multinomial")
 plot(fit)
-preds_1 <- predict(fit$glmnet.fit, x_train[s,], s = fit$lambda.min, type = "class") #Using lambda.min
-preds_2 <- predict(fit$glmnet.fit, x_train[s,], s = fit$lambda.1se, type = "class") #Using lambda.1se
-t_1 <- table(as.vector(preds_1), y_test[s])
-t_2 <- table(as.vector(preds_2), y_test[s])
+# Let's test the prediction rates on 100 of the test digits
+s_test <- sample(seq_along(y_test), 100)
+preds_1 <- predict(fit$glmnet.fit, x_test[s_test,], s = fit$lambda.min, type = "class") #Using lambda.min
+preds_2 <- predict(fit$glmnet.fit, x_test[s_test,], s = fit$lambda.1se, type = "class") #Using lambda.1se
+t_1 <- table(as.vector(preds_1), y_test[s_test])
+t_2 <- table(as.vector(preds_2), y_test[s_test])
 t_1
 t_2
 # The correct predictions are on the diagonals of these tables
-sum(diag(t_1)) / sum(t_2) #0.08917197
-sum(diag(t_2)) / sum(t_2) #0.08280255
+sum(diag(t_1)) / sum(t_2) #0.83
+sum(diag(t_2)) / sum(t_2) #0.84
 ```
 So using the LASSO for a multinomial GLM after converting the images in MNIST into vectors of pixel
-intensities provides pretty poor prediction rates. Let's try this now with a dense neural network. We
-will use the functions from the textbook *A Computational Approach to Statistical Learning* that I
-have included in the `casl-neural-net.R` file in the `R` directory of this package.
+intensities provides pretty good prediction rates, but let's try this now with a dense neural
+network. We will use the capabilities for a covolutional neural network contained in the `tensorflow`
+package, with the `R` interface from the `keras` package. We will use a similar implementation that
+we did in class (in the `s.r` file). The convolutional neural network will extract the predictive
+features we want. The first thing we will do is prepare the data.
+```{r}
+# Parameters for the convolutional neural network
+batch_size <- 128
+n_class <- 10
+epochs <- 2
 
+# Dimensions for the images
+n_row <- 28
+n_col <- 28
 
+# We need to redefine the training and test data since we "flattened" the matrices into vectors
+x_train_conv <- mnist$train$x
+y_train_conv <- mnist$train$y
+x_test_conv <- mnist$test$x
+y_test_conv <- mnist$test$y
 
+# Next we extract each picture from the data sets
+x_train_conv <- array_reshape(x_train_conv, c(nrow(x_train_conv), n_row, n_col, 1))
+x_test_conv <- array_reshape(x_test_conv, c(nrow(x_test_conv), n_row, n_col, 1))
+input_shape <- c(n_row, n_col, 1)
+
+# We need to transform the RGB values to the [0,1] range
+x_train_conv <- x_train_conv / 255
+x_test_conv <- x_test_conv / 255
+
+# Lastly we convert the class vectors for the responses to binary class matrices
+y_train_conv <- to_categorical(y_train_conv, n_class)
+y_test_conv <- to_categorical(y_test_conv, n_class)
+
+# Like before, we will not use all of the characters for the training and prediction so that neither
+# takes too long, but we will use 10000 for training and 1000 for prediction this time
+s_train <- sample(seq_along(y_train), 10000)
+s_test <- sample(seq_along(y_test), 1000)
+x_train_conv <- x_train_conv[s_train,,,, drop=FALSE]
+x_test_conv <- x_test_conv[s_test,,,, drop=FALSE]
+y_train_conv <- y_train_conv[s_train]
+y_test_conv <- y_test_conv[s_test]
+```
+Now that we have our data ready, we define our model. Our convolutional neural network will first
+have a $2$-dimensional convolution with $32$ filters and a $3\times3$ kernel matrix (the first
+`layer_conv_2d` step). Next we use another $2$-dimensional convolution with a $3\times3$ kernel
+matrix, but now we have have $64$ filter steps. After this, we pool each $2\times2$ section of the
+input matrix and keep only the maximum pixel intensity (cutting the number of pixels used by
+$\frac{1}{4}$). Using the `max_pooling` operation after doing the convolutions is one way to take
+weighted averages of each section of the images. We then set the lowest $0.25$ of the pixel
+intensities to $0$ (the documentation for `layer_dropout` provided by `keras` says that this helps
+prevent overfitting). Next we flatten the matrix to a vector, push it through a dense neural layer of
+$128$ nodes, and set the lowest $0.5$ of intensities to $0$. Finally we add one more dense layer for
+the actual numerical classification. Until now, the activation function we used for the stochastic
+gradient descent (SGD) in this network has been the $ReLU$, but now we will use the
+$\textrm{softmax}$ function (a generalization of the $logit$ function) as the activation function:
+$$
+\begin{array}{rcll}
+a_j^L & = & \textrm{softmax}(z_j^L)\\
+ & = & \frac{\exp(z_j^L)}{\sum_k\exp(z_k^L)}\\
+\end{array}
+$$
+(from Equations 8.57 and 8.58 in the textbook). We use the $\textrm{softmax}$ for the final step
+because $ReLU$ only works for continuous outcomes, and we are looking for probabilities that each
+image will correspond to each digit. We will also use the *categorical cross-entropy* defined as
+$$
+f(a^L,y) = -\sum_k y_k\log(a_k^L)
+$$
+(Equation 8.59) instead of the $\ell^2$ error loss of the $MSE$ function. We can think of the
+categorical cross-entropy as a generalization of the log-likelihood used for logistic regression.
+
+We define, compile, and train the model.
+```{r}
+# Define
+model <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',
+                input_shape = input_shape) %>% 
+  layer_conv_2d(filters = 64, kernel_size = c(3,3), activation = 'relu') %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_dropout(rate = 0.25) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 128, activation = 'relu') %>% 
+  layer_dropout(rate = 0.5) %>% 
+  layer_dense(units = n_class, activation = 'softmax')
+
+# Compile model
+model %>% compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adadelta(),
+  metrics = c('accuracy')
+)
+
+# Train model
+model %>% fit(
+  x_train_conv, y_train_conv,
+  batch_size = batch_size,
+  epochs = epochs, #Using two epochs for the training
+  validation_split = 0.2
+)
+```
+We finally get the accuracy of this model:
+```{r}
+scores <- model %>% evaluate(
+  x_test_conv, y_test_conv, verbose = 0
+)
+
+cat('Test loss:', scores[[1]], '\n')
+cat('Test accuracy:', scores[[2]], '\n')
+```
 
 
 
@@ -62,4 +168,5 @@ fewf
 
 
 # 3. CASL Number 8 in Exercises 8.11
-dbkgrb
+We will use the functions from the textbook *A Computational Approach to Statistical Learning* that I
+have included in the `casl-neural-net.R` file in the `R` directory of this package.
