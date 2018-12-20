@@ -15,21 +15,20 @@ x_test <- array_reshape(x_test, c(10000, 28^2))
 y_train <- factor(y_train)
 y_test <- factor(y_test)
 
-# We only use use 1000 of the characters so that the training and prediction does not take too long
-s_train <- sample(seq_along(y_train), 1000)
-fit <- cv.glmnet(x_train[s_train,], y_train[s_train], family = "multinomial")
+# We only use use 1000 of the characters so that the training does not take too long
+s <- sample(seq_along(y_train), 1000)
+fit <- cv.glmnet(x_train[s,], y_train[s], family = "multinomial")
 plot(fit)
-# Let's test the prediction rates on 100 of the test digits
-s_test <- sample(seq_along(y_test), 100)
-preds_1 <- predict(fit$glmnet.fit, x_test[s_test,], s = fit$lambda.min, type = "class") #Using lambda.min
-preds_2 <- predict(fit$glmnet.fit, x_test[s_test,], s = fit$lambda.1se, type = "class") #Using lambda.1se
-t_1 <- table(as.vector(preds_1), y_test[s_test])
-t_2 <- table(as.vector(preds_2), y_test[s_test])
+# We will not need to use a subset of the test data set for the prediction
+preds_1 <- predict(fit$glmnet.fit, x_test, s = fit$lambda.min, type = "class") #Using lambda.min
+preds_2 <- predict(fit$glmnet.fit, x_test, s = fit$lambda.1se, type = "class") #Using lambda.1se
+t_1 <- table(as.vector(preds_1), y_test)
+t_2 <- table(as.vector(preds_2), y_test)
 t_1
 t_2
 # The correct predictions are on the diagonals of these tables
-sum(diag(t_1)) / sum(t_2) #0.83
-sum(diag(t_2)) / sum(t_2) #0.84
+sum(diag(t_1)) / sum(t_2) #0.8509
+sum(diag(t_2)) / sum(t_2) #0.8473
 
 ## ------------------------------------------------------------------------
 # Parameters for the convolutional neural network
@@ -59,15 +58,6 @@ x_test_conv <- x_test_conv / 255
 # Lastly we convert the class vectors for the responses to binary class matrices
 y_train_conv <- to_categorical(y_train_conv, n_class)
 y_test_conv <- to_categorical(y_test_conv, n_class)
-
-# Like before, we will not use all of the characters for the training and prediction so that neither
-# takes too long, but we will use 10000 for training and 1000 for prediction this time
-s_train <- sample(seq_along(y_train), 10000)
-s_test <- sample(seq_along(y_test), 1000)
-x_train_conv <- x_train_conv[s_train,,,, drop=FALSE]
-x_test_conv <- x_test_conv[s_test,,,, drop=FALSE]
-y_train_conv <- y_train_conv[s_train]
-y_test_conv <- y_test_conv[s_test]
 
 ## ------------------------------------------------------------------------
 # Define

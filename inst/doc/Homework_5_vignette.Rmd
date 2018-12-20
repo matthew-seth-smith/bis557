@@ -33,21 +33,20 @@ x_test <- array_reshape(x_test, c(10000, 28^2))
 y_train <- factor(y_train)
 y_test <- factor(y_test)
 
-# We only use use 1000 of the characters so that the training and prediction does not take too long
-s_train <- sample(seq_along(y_train), 1000)
-fit <- cv.glmnet(x_train[s_train,], y_train[s_train], family = "multinomial")
+# We only use use 1000 of the characters so that the training does not take too long
+s <- sample(seq_along(y_train), 1000)
+fit <- cv.glmnet(x_train[s,], y_train[s], family = "multinomial")
 plot(fit)
-# Let's test the prediction rates on 100 of the test digits
-s_test <- sample(seq_along(y_test), 100)
-preds_1 <- predict(fit$glmnet.fit, x_test[s_test,], s = fit$lambda.min, type = "class") #Using lambda.min
-preds_2 <- predict(fit$glmnet.fit, x_test[s_test,], s = fit$lambda.1se, type = "class") #Using lambda.1se
-t_1 <- table(as.vector(preds_1), y_test[s_test])
-t_2 <- table(as.vector(preds_2), y_test[s_test])
+# We will not need to use a subset of the test data set for the prediction
+preds_1 <- predict(fit$glmnet.fit, x_test, s = fit$lambda.min, type = "class") #Using lambda.min
+preds_2 <- predict(fit$glmnet.fit, x_test, s = fit$lambda.1se, type = "class") #Using lambda.1se
+t_1 <- table(as.vector(preds_1), y_test)
+t_2 <- table(as.vector(preds_2), y_test)
 t_1
 t_2
 # The correct predictions are on the diagonals of these tables
-sum(diag(t_1)) / sum(t_2) #0.83
-sum(diag(t_2)) / sum(t_2) #0.84
+sum(diag(t_1)) / sum(t_2) #0.8509
+sum(diag(t_2)) / sum(t_2) #0.8473
 ```
 So using the LASSO for a multinomial GLM after converting the images in MNIST into vectors of pixel
 intensities provides pretty good prediction rates, but let's try this now with a dense neural
@@ -83,16 +82,10 @@ x_test_conv <- x_test_conv / 255
 # Lastly we convert the class vectors for the responses to binary class matrices
 y_train_conv <- to_categorical(y_train_conv, n_class)
 y_test_conv <- to_categorical(y_test_conv, n_class)
-
-# Like before, we will not use all of the characters for the training and prediction so that neither
-# takes too long, but we will use 10000 for training and 1000 for prediction this time
-s_train <- sample(seq_along(y_train), 10000)
-s_test <- sample(seq_along(y_test), 1000)
-x_train_conv <- x_train_conv[s_train,,,, drop=FALSE]
-x_test_conv <- x_test_conv[s_test,,,, drop=FALSE]
-y_train_conv <- y_train_conv[s_train]
-y_test_conv <- y_test_conv[s_test]
 ```
+We can use all of the data to train our neural network, since it will only take about five minutes
+and will be much more accurate than the LASSO method.
+
 Now that we have our data ready, we define our model. Our convolutional neural network will first
 have a $2$-dimensional convolution with $32$ filters and a $3\times3$ kernel matrix (the first
 `layer_conv_2d` step). Next we use another $2$-dimensional convolution with a $3\times3$ kernel
@@ -159,8 +152,12 @@ scores <- model %>% evaluate(
 cat('Test loss:', scores[[1]], '\n')
 cat('Test accuracy:', scores[[2]], '\n')
 ```
-
-
+So while our convolutional neural network is much more complicated than the GLM using the LASSO
+before, we have a much better prediction accuracy (over $98\%$!). We did use all of the training data
+this time, but we were able to extract non-linear and $2$-dimensional predictive features using the
+neural network. Because of the robustness and efficiency of the `tensorflow` package, our neural
+network also took less time to train on all of the data than `glmnet` needed to train on only part of
+the data.
 
 
 # 2. CASL Number 4 in Exercises 8.11
